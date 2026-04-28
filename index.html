@@ -4,166 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>La tua esperienza</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
   <style>
-    :root {
-      --gold: #c9a84c;
-      --gold-light: #f0d080;
-      --cream: #fdf6ec;
-      --dark: #1a1208;
-      --soft: #7a6a50;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--cream);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      background-image: radial-gradient(ellipse at 20% 80%, rgba(201,168,76,0.08) 0%, transparent 60%),
-                        radial-gradient(ellipse at 80% 10%, rgba(201,168,76,0.06) 0%, transparent 50%);
-    }
-
-    h1, h2, .serif { font-family: 'Playfair Display', serif; }
-
-    #app {
-      width: 100%;
-      max-width: 420px;
-      position: relative;
-    }
-
-    .screen {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      opacity: 0;
-      transform: translateY(24px);
-      pointer-events: none;
-      transition: opacity 0.45s ease, transform 0.45s ease;
-      background: #fff;
-      border-radius: 28px;
-      padding: 2.5rem 2rem;
-      box-shadow: 0 8px 48px rgba(26,18,8,0.10), 0 1px 0 rgba(201,168,76,0.15);
-      border: 1px solid rgba(201,168,76,0.18);
-    }
-
-    .screen.active {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: all;
-      position: relative;
-    }
-
-    .logo-ring {
-      width: 82px; height: 82px;
-      border-radius: 50%;
-      border: 2px solid var(--gold);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1.25rem;
-      background: linear-gradient(135deg, #fff9ee, #fff);
-      box-shadow: 0 0 0 6px rgba(201,168,76,0.08);
-    }
-
+    :root { --gold: #c9a84c; --cream: #fdf6ec; --dark: #1a1208; --soft: #7a6a50; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    .screen { background: #fff; border-radius: 28px; padding: 2.5rem 2rem; box-shadow: 0 8px 48px rgba(0,0,0,0.1); max-width: 420px; width: 100%; display: none; }
+    .screen.active { display: block; }
     .stars { display: flex; gap: 10px; justify-content: center; margin: 1.5rem 0; }
-
-    .star {
-      font-size: 2.6rem;
-      cursor: pointer;
-      color: #d9cfc0;
-      transition: color 0.18s, transform 0.18s;
-      user-select: none;
-      line-height: 1;
-    }
-
-    .star:hover, .star.hovered { color: var(--gold); transform: scale(1.18); }
-    .star.selected { color: var(--gold); }
-
-    .btn-gold {
-      background: linear-gradient(135deg, var(--gold), #b8912e);
-      color: #fff;
-      border: none;
-      border-radius: 100px;
-      padding: 0.9rem 1.5rem;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 600;
-      font-size: 1rem;
-      letter-spacing: 0.02em;
-      cursor: pointer;
-      width: 100%;
-      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-      box-shadow: 0 4px 18px rgba(201,168,76,0.35);
-    }
-    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.40); }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--soft);
-      border: 1.5px solid #e0d5c5;
-      border-radius: 100px;
-      padding: 0.75rem 1.5rem;
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 500;
-      font-size: 0.9rem;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .field {
-      width: 100%;
-      background: #faf7f2;
-      border: 1.5px solid #e8dfc8;
-      border-radius: 14px;
-      padding: 0.85rem 1rem;
-      margin-bottom: 0.85rem;
-      outline: none;
-    }
-    .field:focus { border-color: var(--gold); }
-
-    .divider {
-      display: flex; align-items: center; gap: 10px;
-      margin: 1.25rem 0;
-      color: #c8bda5;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(to right, transparent, #e0d5c5, transparent);
-    }
-
-    .privacy { font-size: 0.72rem; color: #b0a48a; text-align: center; margin-top: 0.75rem; }
-    
-    .btn-maps {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      background: #fff;
-      border: 2px solid var(--gold);
-      border-radius: 100px;
-      padding: 0.9rem 1.5rem;
-      font-weight: 600;
-      text-decoration: none;
-      color: var(--dark);
-    }
-    .btn-maps:hover { background: var(--gold); color: #fff; }
-
-    .float { animation: float 2.8s ease-in-out infinite; }
-    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .star { font-size: 2.6rem; cursor: pointer; color: #d9cfc0; transition: transform 0.2s; }
+    .star:hover { transform: scale(1.2); }
+    .btn-gold { background: var(--gold); color: #fff; border-radius: 100px; padding: 0.9rem; width: 100%; font-weight: 600; margin-top: 1rem; }
+    .field { width: 100%; background: #faf7f2; border: 1.5px solid #e8dfc8; border-radius: 14px; padding: 0.85rem; margin-bottom: 0.85rem; outline: none; }
   </style>
 </head>
 <body>
 
 <div id="app">
-
   <div id="screen-rating" class="screen active">
-    <div class="logo-ring"><span style="font-size:2rem;">🌟</span></div>
-    <p class="text-soft text-center text-sm tracking-widest uppercase mb-1">La tua esperienza</p>
-    <h1 class="serif text-dark text-center text-2xl font-bold mb-1">Come valuti la tua esperienza?</h1>
+    <h1 style="font-family:'Playfair Display'; text-align:center; font-size: 1.5rem; font-weight: bold;">Come valuti la tua esperienza?</h1>
     <div class="stars" id="stars-container">
       <span class="star" data-value="1">★</span>
       <span class="star" data-value="2">★</span>
@@ -171,76 +30,54 @@
       <span class="star" data-value="4">★</span>
       <span class="star" data-value="5">★</span>
     </div>
-    <p class="text-center text-xs text-soft opacity-60">Nessun account richiesto · 10 secondi</p>
-  </div>
-
-  <div id="screen-negative" class="screen">
-    <div class="text-center mb-4">
-      <span style="font-size:2.4rem;">🙏</span>
-      <h2 class="serif text-dark text-xl font-bold mt-2">Ci dispiace davvero</h2>
-      <p class="text-soft text-sm mt-2">Dicci cosa possiamo migliorare in privato.</p>
-    </div>
-    <textarea id="negative-feedback" class="field" placeholder="Cosa non ha funzionato?"></textarea>
-    <button class="btn-gold" id="btn-send-negative">Invia feedback privato</button>
   </div>
 
   <div id="screen-lead" class="screen">
-    <span style="font-size:2.8rem; display:block; text-align:center;" class="float">🎉</span>
-    <h2 class="serif text-dark text-center text-2xl font-bold">Fantastico!</h2>
-    <div class="divider">Il regalo dello Chef</div>
-    <p class="text-soft text-center text-sm mb-4">Ricevi un regalo esclusivo su WhatsApp.</p>
+    <h2 style="font-family:'Playfair Display'; text-align:center; font-size: 1.5rem; font-weight: bold;">Ottimo! 🎉</h2>
+    <p style="text-align:center; margin-bottom: 1rem;">Inserisci i dati per il regalo:</p>
     <input type="text" id="lead-name" class="field" placeholder="Il tuo nome" />
-    <input type="tel" id="lead-phone" class="field" placeholder="Numero WhatsApp" />
-    <button class="btn-gold" id="btn-unlock">SBLOCCA IL REGALO 🎁</button>
-    <p class="privacy">Trattiamo i dati secondo GDPR solo per comunicazioni del locale.</p>
+    <input type="tel" id="lead-phone" class="field" placeholder="WhatsApp" />
+    <button class="btn-gold" id="btn-unlock">SBLOCCA REGALO 🎁</button>
   </div>
 
   <div id="screen-confirm" class="screen">
-    <div class="text-center mb-3">
-      <span style="font-size:3rem;">✅</span>
-      <h2 class="serif text-dark text-2xl font-bold mt-2">Confermato!</h2>
-      <p class="text-soft text-sm mt-2">Il regalo è in arrivo su WhatsApp.</p>
-    </div>
-    <div class="divider">Un ultimo favore</div>
-    <a href="https://maps.google.com" target="_blank" class="btn-maps">RECENSISCI SU GOOGLE MAPS</a>
+    <h2 style="text-align:center;">✅ Grazie!</h2>
+    <p style="text-align:center;">Il regalo è in arrivo.</p>
   </div>
-
 </div>
 
 <script>
-  // CONFIGURAZIONE: INCOLLA QUI IL TUO URL DI GOOGLE
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwOHL3KoHXvfXA4JMwyJzdInUs_CkvOzA U3SnQyivjmksqC1ppLlIH5mioS2s67tvrG/exec';
+  const GOOGLE_URL = "https://script.google.com/macros/s/AKfycbwOHL3KoHXvfXA4JMwyJzdInUs_CkvOzA U3SnQyivjmksqC1ppLlIH5mioS2s67tvrG/exec".replace(/\s/g, '');
 
-  const screens = {
-    rating: document.getElementById('screen-rating'),
-    negative: document.getElementById('screen-negative'),
-    lead: document.getElementById('screen-lead'),
-    confirm: document.getElementById('screen-confirm')
-  };
-
-  let currentRating = 0;
-
-  function showScreen(name) {
-    Object.values(screens).forEach(s => s.classList.remove('active'));
-    screens[name].classList.add('active');
-  }
-
-  // Logica Stelle
   document.getElementById('stars-container').addEventListener('click', (e) => {
-    const star = e.target.closest('.star');
-    if (!star) return;
-    currentRating = parseInt(star.dataset.value);
-    
-    // Feedback visivo stelle
-    document.querySelectorAll('.star').forEach((s, i) => {
-      s.style.color = i < currentRating ? '#c9a84c' : '#d9cfc0';
-    });
-
-    setTimeout(() => {
-      if (currentRating <= 3) showScreen('negative');
-      else showScreen('lead');
-    }, 400);
+    if(e.target.classList.contains('star')) {
+      const val = e.target.dataset.value;
+      document.querySelectorAll('.star').forEach((s, i) => s.style.color = i < val ? '#c9a84c' : '#d9cfc0');
+      setTimeout(() => {
+        document.getElementById('screen-rating').classList.remove('active');
+        document.getElementById('screen-lead').classList.add('active');
+      }, 400);
+    }
   });
 
-  // Funzione Invio Dati
-  async function inviaDati(payload
+  document.getElementById('btn-unlock').addEventListener('click', async () => {
+    const nome = document.getElementById('lead-name').value;
+    const tel = document.getElementById('lead-phone').value;
+    if(!nome || !tel) return alert("Compila tutto!");
+
+    document.getElementById('btn-unlock').innerText = "Invio...";
+    
+    try {
+      await fetch(GOOGLE_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify({nome: nome, telefono: tel, rating: 5})
+      });
+    } catch(e) {}
+
+    document.getElementById('screen-lead').classList.remove('active');
+    document.getElementById('screen-confirm').classList.add('active');
+  });
+</script>
+</body>
+</html>
