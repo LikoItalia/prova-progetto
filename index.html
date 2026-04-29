@@ -37,9 +37,7 @@
             margin-bottom: 1rem; 
             outline: none;
             font-size: 1rem;
-            transition: border-color 0.3s;
         }
-        .field:focus { border-color: var(--gold); }
 
         .btn-gold { 
             background: var(--gold); 
@@ -51,10 +49,9 @@
             margin-top: 1rem;
             cursor: pointer;
             border: none;
-            box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3);
         }
         
-        h1 { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; color: var(--dark); margin-bottom: 1rem; line-height: 1.3; }
+        h1 { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; color: var(--dark); margin-bottom: 1rem; }
     </style>
 </head>
 <body>
@@ -81,7 +78,9 @@
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwbqvxy_lUF4lKcPodlt9PmLL4ohDrPziG5_X22TKPdG-v_Z6_0EIuuZHV4-8RF1UTI/exec';
+    // URL AGGIORNATO (Versione 4)
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwHB7tnFVV2plJywN4s-tSCjNTCP0-oNqrUsZ8d4sDa_uiVXPBKy16-zJwJlYxyBPA5/exec';
+    
     let currentRating = 0;
 
     // Gestione Stelle
@@ -90,7 +89,6 @@
             currentRating = star.getAttribute('data-value');
             document.querySelectorAll('.star').forEach(s => {
                 s.style.color = s.getAttribute('data-value') <= currentRating ? '#c9a84c' : '#d9cfc0';
-                s.style.transform = s.getAttribute('data-value') <= currentRating ? 'scale(1.1)' : 'scale(1)';
             });
             setTimeout(() => {
                 document.getElementById('screen-rating').classList.remove('active');
@@ -99,20 +97,19 @@
         });
     });
 
-    // Invio Dati
+    // Funzione Invio
     function inviaDati() {
         const nome = document.getElementById('input-nome').value;
         const numero = document.getElementById('input-numero').value;
         const btn = document.getElementById('btn-invio');
 
         if (!nome || !numero) {
-            alert("Per favore, inserisci tutti i dati!");
+            alert("Inserisci nome e numero!");
             return;
         }
 
         btn.innerText = "Invio in corso...";
         btn.disabled = true;
-        btn.style.opacity = "0.7";
 
         const data = { nome, numero, rating: currentRating };
 
@@ -126,10 +123,9 @@
             window.location.reload();
         })
         .catch(() => {
-            alert('Errore nell\'invio. Riprova!');
+            alert('Errore! Riprova.');
             btn.innerText = "Ricevi il regalo 🎁";
             btn.disabled = false;
-            btn.style.opacity = "1";
         });
     }
 </script>
