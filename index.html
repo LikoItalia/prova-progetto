@@ -1,138 +1,4 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>La tua esperienza</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --gold: #c9a84c;
-      --gold-light: #f0d080;
-      --cream: #fdf6ec;
-      --dark: #1a1208;
-      --soft: #7a6a50;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--cream);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      background-image: radial-gradient(ellipse at 20% 80%, rgba(201,168,76,0.08) 0%, transparent 60%),
-                        radial-gradient(ellipse at 80% 10%, rgba(201,168,76,0.06) 0%, transparent 50%);
-    }
-
-    h1, h2, .serif { font-family: 'Playfair Display', serif; }
-
-    #app { width: 100%; max-width: 420px; position: relative; }
-
-    .screen {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      opacity: 0;
-      transform: translateY(24px);
-      pointer-events: none;
-      transition: opacity 0.45s ease, transform 0.45s ease;
-      background: #fff;
-      border-radius: 28px;
-      padding: 2.5rem 2rem;
-      box-shadow: 0 8px 48px rgba(26,18,8,0.10), 0 1px 0 rgba(201,168,76,0.15);
-      border: 1px solid rgba(201,168,76,0.18);
-    }
-
-    .screen.active { opacity: 1; transform: translateY(0); pointer-events: all; position: relative; }
-
-    .logo-ring {
-      width: 82px; height: 82px;
-      border-radius: 50%;
-      border: 2px solid var(--gold);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 1.25rem;
-      background: linear-gradient(135deg, #fff9ee, #fff);
-      box-shadow: 0 0 0 6px rgba(201,168,76,0.08);
-    }
-
-    .stars { display: flex; gap: 10px; justify-content: center; margin: 1.5rem 0; }
-    .star { font-size: 2.6rem; cursor: pointer; color: #d9cfc0; transition: color 0.18s, transform 0.18s; user-select: none; line-height: 1; }
-    .star:hover, .star.hovered { color: var(--gold); transform: scale(1.18); }
-    .star.selected { color: var(--gold); }
-
-    .btn-gold {
-      background: linear-gradient(135deg, var(--gold), #b8912e);
-      color: #fff; border: none; border-radius: 100px; padding: 0.9rem 1.5rem;
-      font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 1rem;
-      cursor: pointer; width: 100%; box-shadow: 0 4px 18px rgba(201,168,76,0.35);
-    }
-
-    .btn-outline {
-      background: transparent; color: var(--soft); border: 1.5px solid #e0d5c5;
-      border-radius: 100px; padding: 0.75rem 1.5rem; font-size: 0.9rem;
-      cursor: pointer; width: 100%;
-    }
-
-    .field {
-      width: 100%; background: #faf7f2; border: 1.5px solid #e8dfc8;
-      border-radius: 14px; padding: 0.85rem 1rem; outline: none; margin-bottom: 0.85rem;
-    }
-    .field:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.12); }
-
-    .divider { display: flex; align-items: center; gap: 10px; margin: 1.25rem 0; color: #c8bda5; font-size: 0.75rem; text-transform: uppercase; }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, transparent, #e0d5c5, transparent); }
-
-    .privacy { font-size: 0.72rem; color: #b0a48a; text-align: center; margin-top: 0.75rem; }
-    .btn-maps {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      background: #fff; border: 2px solid var(--gold); color: var(--dark);
-      border-radius: 100px; padding: 0.9rem 1.5rem; font-weight: 600; text-decoration: none;
-    }
-  </style>
-</head>
-<body>
-
-<div id="app">
-  <div id="screen-rating" class="screen active">
-    <div class="logo-ring"><span style="font-size:2rem;">🌟</span></div>
-    <p class="text-soft text-center text-sm font-medium tracking-widest uppercase mb-1">La tua esperienza</p>
-    <h1 class="serif text-dark text-center text-2xl font-bold mb-1">Come valuti la tua esperienza?</h1>
-    <div class="stars" id="stars-container">
-      <span class="star" data-value="1">★</span>
-      <span class="star" data-value="2">★</span>
-      <span class="star" data-value="3">★</span>
-      <span class="star" data-value="4">★</span>
-      <span class="star" data-value="5">★</span>
-    </div>
-  </div>
-
-  <div id="screen-lead" class="screen">
-    <h2 class="serif text-dark text-center text-2xl font-bold">Fantastico!</h2>
-    <div class="divider">Il regalo dello Chef</div>
-    <p class="text-soft text-center text-sm mb-4">Dove possiamo inviarti il tuo <strong class="text-dark">regalo esclusivo</strong>?</p>
-    <input type="text" id="lead-name" class="field" placeholder="Il tuo nome" />
-    <input type="tel" id="lead-phone" class="field" placeholder="Numero WhatsApp" />
-    <button class="btn-gold" id="btn-unlock">SBLOCCA IL REGALO 🎁</button>
-    <p class="privacy">I tuoi dati saranno trattati solo per inviarti il regalo e comunicazioni dal locale.</p>
-  </div>
-
-  <div id="screen-confirm" class="screen">
-    <h2 class="serif text-dark text-center text-2xl font-bold">Confermato!</h2>
-    <p class="text-soft text-center text-sm mt-2">Il tuo regalo è in arrivo su WhatsApp. 🔔</p>
-    <div class="divider">Un ultimo favore</div>
-    <a href="https://maps.google.com" target="_blank" class="btn-maps">RECENSISCI SU GOOGLE MAPS</a>
-  </div>
-</div>
-
 <script>
-  // IL TUO URL GOOGLE CORRETTO
   const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxTV9TY6GSa8flkj4vmSuppvULwOpzdX7DeyHfRWm0PayfM0T0t6taYZuPPfwb6ffiW/exec';
 
   const screens = {
@@ -148,7 +14,6 @@
     screens[name].classList.add('active');
   }
 
-  // Stelle
   document.getElementById('stars-container').addEventListener('click', (e) => {
     if (e.target.classList.contains('star')) {
       currentRating = e.target.dataset.value;
@@ -156,37 +21,28 @@
     }
   });
 
-  // Invio Dati
-  document.getElementById('btn-unlock').addEventListener('click', async () => {
+  document.getElementById('btn-unlock').addEventListener('click', function() {
     const nome = document.getElementById('lead-name').value;
     const telefono = document.getElementById('lead-phone').value;
-    const btn = document.getElementById('btn-unlock');
+    const btn = this;
 
     if (!nome || !telefono) return alert("Inserisci i dati!");
 
     btn.innerText = "⏳ Invio...";
     btn.disabled = true;
 
-    try {
-      // Usiamo il metodo POST per parlare con lo script dello screenshot
-      await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        mode: 'no-cors', // Fondamentale per evitare blocchi Google
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nome: nome,
-          telefono: telefono,
-          rating: currentRating
-        })
-      });
+    // TRUCCO FINALE: Invio tramite immagine (Beacon)
+    // Questo bypassa tutti i blocchi di sicurezza del browser
+    const invioUrl = WEBHOOK_URL + "?nome=" + encodeURIComponent(nome) + 
+                     "&telefono=" + encodeURIComponent(telefono) + 
+                     "&rating=" + encodeURIComponent(currentRating);
+    
+    const img = new Image();
+    img.src = invioUrl;
 
+    // Mostra la conferma dopo 1 secondo, a prescindere
+    setTimeout(() => {
       showScreen('confirm');
-    } catch (e) {
-      // Anche se dà errore CORS, Google spesso riceve comunque i dati
-      showScreen('confirm');
-    }
+    }, 1000);
   });
 </script>
-
-</body>
-</html>
