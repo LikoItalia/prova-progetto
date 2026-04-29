@@ -458,25 +458,23 @@
   //  CONFIGURAZIONE WEBHOOK
   //  Un solo endpoint Make.com per entrambi i flussi
   // ══════════════════════════════════════
-  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwlWOFntUxlEIEaikqMmAl_PkK5usmx87aIXh3dHErpogJF9PqMI-N-KgFUvJuQiJI/exec';
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyyNLR7uiBhht4De4MAkhGKMEMtSYi5PKs7_-hCED-0tvPUSWSu9rv5b5TwbRVeqZsS/exec';
 
-  // ── Helper: invia dati al webhook in modo silenzioso ──
-  // Usa try/catch + Promise.race con timeout di 6s:
-  // l'utente passa SEMPRE alla schermata successiva, anche se il server è lento o KO.
+  // ── Helper: invia dati al webhook tramite GET (parametri URL) ──
+  // Google Apps Script con no-cors non legge il body JSON → usiamo doGet con URLSearchParams
+  // L'utente passa SEMPRE alla schermata successiva, webhook o no (timeout 6s)
   async function sendToWebhook(payload) {
-    const timeout = new Promise(resolve => setTimeout(resolve, 6000)); // max 6s attesa
+    const timeout = new Promise(resolve => setTimeout(resolve, 6000));
     try {
+      const params = new URLSearchParams(payload).toString();
       await Promise.race([
-        fetch(WEBHOOK_URL, {
-          method: 'POST',
-          mode: 'no-cors', // necessario per Google Apps Script da browser
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+        fetch(WEBHOOK_URL + '?' + params, {
+          method: 'GET',
+          mode: 'no-cors'
         }),
         timeout
       ]);
     } catch (err) {
-      // Errore di rete: logghiamo ma non blocchiamo mai il cliente
       console.warn('[Webhook] Invio non riuscito:', err);
     }
   }
