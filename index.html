@@ -1,17 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>La tua esperienza</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #c9a84c; --cream: #fdf6ec; --dark: #1a1208; --soft: #7a6a50; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--cream); min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; }
+        .screen { background: #fff; border-radius: 28px; padding: 2.5rem 2rem; box-shadow: 0 8px 48px rgba(0,0,0,0.1); max-width: 420px; width: 90%; display: none; }
+        .screen.active { display: block; }
+        .stars { display: flex; gap: 10px; justify-content: center; margin: 1.5rem 0; }
+        .star { font-size: 2.6rem; cursor: pointer; color: #d9cfc0; transition: transform 0.2s; }
+        .star.selected { color: var(--gold); }
+        .btn-gold { background: var(--gold); color: #fff; border-radius: 100px; padding: 0.9rem; width: 100%; font-weight: 600; margin-top: 1rem; transition: opacity 0.2s; }
+        .field { width: 100%; background: #faf7f2; border: 1.5px solid #e8dfc8; border-radius: 14px; padding: 0.85rem; margin-bottom: 0.85rem; outline: none; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div id="screen-rating" class="screen active">
+        <h1 style="font-family:'Playfair Display'; text-align:center; font-size: 1.5rem; font-weight: bold; color: var(--dark);">Come valuti l'esperienza?</h1>
+        <div class="stars" id="stars-container">
+            <span class="star" data-value="1">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="3">★</span>
+            <span class="star" data-value="4">★</span>
+            <span class="star" data-value="5">★</span>
+        </div>
+        <p style="text-align:center; color: var(--soft); font-size: 0.9rem;">Tocca una stella per votare</p>
+    </div>
+
+    <div id="screen-form" class="screen">
+        <h1 style="font-family:'Playfair Display'; text-align:center; font-size: 1.5rem; font-weight: bold; color: var(--dark); margin-bottom: 1rem;">Dove ti mandiamo il regalo?</h1>
+        <input type="text" id="input-nome" placeholder="Il tuo nome" class="field">
+        <input type="tel" id="input-numero" placeholder="Il tuo numero" class="field">
+        <button onclick="inviaDati()" class="btn-gold">Ricevi il regalo 🎁</button>
+    </div>
+</div>
+
 <script>
-  // URL del tuo Google Script aggiornato
   const scriptURL = 'https://script.google.com/macros/s/AKfycbwbqvxy_lUF4lKcPodlt9PmLL4ohDrPziG5_X22TKPdG-v_Z6_0EIuuZHV4-8RF1UTI/exec';
-  
   let currentRating = 0;
 
-  // Gestione delle stelline (per farle illuminare)
+  // Gestione Stelline
   document.querySelectorAll('.star').forEach(star => {
     star.addEventListener('click', () => {
       currentRating = star.getAttribute('data-value');
       document.querySelectorAll('.star').forEach(s => {
         s.style.color = s.getAttribute('data-value') <= currentRating ? 'var(--gold)' : '#d9cfc0';
       });
-      // Dopo il voto, passa alla schermata dati (se il tuo sito lo prevede)
       setTimeout(() => {
         document.getElementById('screen-rating').classList.remove('active');
         document.getElementById('screen-form').classList.add('active');
@@ -19,10 +59,10 @@
     });
   });
 
-  // Funzione per inviare i dati al foglio Google
+  // Invio Dati
   function inviaDati() {
-    const nome = document.querySelector('input[placeholder="Il tuo nome"]').value;
-    const numero = document.querySelector('input[placeholder="Il tuo numero"]').value;
+    const nome = document.getElementById('input-nome').value;
+    const numero = document.getElementById('input-numero').value;
 
     if(!nome || !numero) {
       alert("Per favore, inserisci nome e numero.");
@@ -43,11 +83,11 @@
     })
     .then(() => {
       alert('Grazie! Riceverai il tuo regalo su WhatsApp 🎁');
-      location.reload(); // Ricarica la pagina per resettare
+      location.reload(); 
     })
-    .catch(error => console.error('Errore!', error.message));
+    .catch(error => alert('Errore nell\'invio. Riprova!'));
   }
-  
-  // Collega la funzione al tuo bottone finale
-  // Assicurati che il tuo bottone abbia: onclick="inviaDati()"
 </script>
+
+</body>
+</html>
