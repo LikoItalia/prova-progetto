@@ -1,48 +1,100 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La tua esperienza - Liko</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --gold: #c9a84c; --cream: #fdf6ec; --dark: #1a1208; --soft: #7a6a50; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    h1, h2, .serif { font-family: 'Playfair Display', serif; }
+    .screen { display: none; background: #fff; border-radius: 28px; padding: 2.5rem 2rem; box-shadow: 0 8px 48px rgba(0,0,0,0.1); border: 1px solid rgba(201,168,76,0.18); width: 100%; max-width: 400px; text-align: center; }
+    .screen.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .star { font-size: 2.6rem; cursor: pointer; color: #d9cfc0; transition: 0.2s; padding: 0 5px; }
+    .star:hover, .star.selected { color: var(--gold); }
+    .field { width: 100%; background: #faf7f2; border: 1.5px solid #e8dfc8; border-radius: 14px; padding: 0.85rem 1rem; margin-bottom: 0.85rem; outline: none; }
+    .btn-gold { background: var(--gold); color: #fff; border: none; border-radius: 100px; padding: 1rem; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(201,168,76,0.3); }
+    .btn-maps { display: flex; align-items: center; justify-content: center; gap: 10px; border: 2px solid var(--gold); border-radius: 100px; padding: 0.9rem; font-weight: 600; text-decoration: none; color: var(--dark); margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div id="screen-rating" class="screen active">
+    <div style="font-size:3rem; margin-bottom:1rem;">🌟</div>
+    <h1 class="serif text-2xl font-bold mb-4">Come valuti la tua esperienza?</h1>
+    <div class="stars mb-4">
+      <span class="star" onclick="setRating(1)">★</span>
+      <span class="star" onclick="setRating(2)">★</span>
+      <span class="star" onclick="setRating(3)">★</span>
+      <span class="star" onclick="setRating(4)">★</span>
+      <span class="star" onclick="setRating(5)">★</span>
+    </div>
+    <p class="text-soft text-sm">Tocca una stella per iniziare</p>
+  </div>
+
+  <div id="screen-lead" class="screen">
+    <h2 class="serif text-2xl font-bold mb-2">Fantastico! 🎉</h2>
+    <p class="text-soft mb-4 text-sm">Dove possiamo inviarti il tuo <strong>regalo esclusivo</strong> dello Chef?</p>
+    <input type="text" id="nome" class="field" placeholder="Il tuo nome">
+    <input type="tel" id="telefono" class="field" placeholder="Numero WhatsApp">
+    <button class="btn-gold" id="btn-invia" onclick="spedisciDati()">SBLOCCA IL REGALO 🎁</button>
+  </div>
+
+  <div id="screen-confirm" class="screen">
+    <h2 class="serif text-2xl font-bold mb-4">Confermato!</h2>
+    <p class="text-soft text-sm mb-6">Il tuo regalo è in arrivo su WhatsApp. 🔔</p>
+    <div style="height:1px; background:#e0d5c5; margin: 20px 0;"></div>
+    <p class="text-dark text-sm mb-4 font-semibold">Ti andrebbe di aiutarci con una recensione veloce?</p>
+    <a href="https://maps.app.goo.gl/TUO_LINK_MAPS" target="_blank" class="btn-maps">
+      RECENSISCI SU GOOGLE MAPS
+    </a>
+  </div>
+</div>
+
 <script>
-  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxTV9TY6GSa8flkj4vmSuppvULwOpzdX7DeyHfRWm0PayfM0T0t6taYZuPPfwb6ffiW/exec';
+  // URL DEL TUO SCRIPT GOOGLE (Aggiornato all'ultima versione)
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxTDZWRNbTLuchxME37iwzQ20-Qd2lQYAhNNjyxEF4-8dz5jO8MlGy9Tz39B3zgUhZi/exec';
+  let ratingScelto = 0;
 
-  const screens = {
-    rating: document.getElementById('screen-rating'),
-    lead: document.getElementById('screen-lead'),
-    confirm: document.getElementById('screen-confirm')
-  };
-
-  let currentRating = 0;
-
-  function showScreen(name) {
-    Object.values(screens).forEach(s => s.classList.remove('active'));
-    screens[name].classList.add('active');
+  function setRating(voto) {
+    ratingScelto = voto;
+    document.getElementById('screen-rating').classList.remove('active');
+    document.getElementById('screen-lead').classList.add('active');
   }
 
-  document.getElementById('stars-container').addEventListener('click', (e) => {
-    if (e.target.classList.contains('star')) {
-      currentRating = e.target.dataset.value;
-      showScreen('lead');
+  function spedisciDati() {
+    const nome = document.getElementById('nome').value;
+    const telefono = document.getElementById('telefono').value;
+    const btn = document.getElementById('btn-invia');
+
+    if(!nome || !telefono) {
+      alert("Per favore, inserisci nome e numero.");
+      return;
     }
-  });
-
-  document.getElementById('btn-unlock').addEventListener('click', function() {
-    const nome = document.getElementById('lead-name').value;
-    const telefono = document.getElementById('lead-phone').value;
-    const btn = this;
-
-    if (!nome || !telefono) return alert("Inserisci i dati!");
 
     btn.innerText = "⏳ Invio...";
     btn.disabled = true;
 
-    // TRUCCO FINALE: Invio tramite immagine (Beacon)
-    // Questo bypassa tutti i blocchi di sicurezza del browser
-    const invioUrl = WEBHOOK_URL + "?nome=" + encodeURIComponent(nome) + 
+    // METODO BEACON (Immagine): Invia i dati a Google bypassando i blocchi CORS
+    const urlFinale = WEBHOOK_URL + 
+                     "?nome=" + encodeURIComponent(nome) + 
                      "&telefono=" + encodeURIComponent(telefono) + 
-                     "&rating=" + encodeURIComponent(currentRating);
+                     "&rating=" + encodeURIComponent(ratingScelto);
     
     const img = new Image();
-    img.src = invioUrl;
+    img.src = urlFinale;
 
-    // Mostra la conferma dopo 1 secondo, a prescindere
+    // Passa alla schermata finale dopo 1 secondo
     setTimeout(() => {
-      showScreen('confirm');
-    }, 1000);
-  });
+      document.getElementById('screen-lead').classList.remove('active');
+      document.getElementById('screen-confirm').classList.add('active');
+    }, 1200);
+  }
 </script>
+
+</body>
+</html>
