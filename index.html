@@ -1,113 +1,53 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>La tua esperienza</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root { --gold: #c9a84c; --cream: #fdf6ec; --dark: #1a1208; --soft: #7a6a50; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--cream); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; margin: 0; }
-    .screen { background: #fff; border-radius: 28px; padding: 2.5rem 2rem; box-shadow: 0 8px 48px rgba(0,0,0,0.1); max-width: 420px; width: 100%; display: none; }
-    .screen.active { display: block; }
-    .stars { display: flex; gap: 10px; justify-content: center; margin: 1.5rem 0; }
-    .star { font-size: 2.6rem; cursor: pointer; color: #d9cfc0; transition: transform 0.2s; }
-    .star.selected { color: var(--gold); }
-    .btn-gold { background: var(--gold); color: #fff; border-radius: 100px; padding: 0.9rem; width: 100%; font-weight: 600; margin-top: 1rem; border: none; cursor: pointer; }
-    .field { width: 100%; background: #faf7f2; border: 1.5px solid #e8dfc8; border-radius: 14px; padding: 0.85rem; margin-bottom: 0.85rem; outline: none; box-sizing: border-box; }
-  </style>
-</head>
-<body>
-
-<div id="app">
-  <div id="screen-rating" class="screen active">
-    <h1 style="font-family:'Playfair Display'; text-align:center; font-size: 1.5rem; font-weight: bold; color: var(--dark);">Come valuti la tua esperienza?</h1>
-    <div class="stars" id="stars-container">
-      <span class="star" data-value="1">★</span>
-      <span class="star" data-value="2">★</span>
-      <span class="star" data-value="3">★</span>
-      <span class="star" data-value="4">★</span>
-      <span class="star" data-value="5">★</span>
-    </div>
-  </div>
-
-  <div id="screen-lead" class="screen">
-    <h2 style="font-family:'Playfair Display'; text-align:center; font-size: 1.5rem; font-weight: bold; color: var(--dark);">Ottimo! 🎉</h2>
-    <p style="text-align:center; margin-bottom: 1.5rem; color: var(--soft);">Inserisci i tuoi dati per ricevere il regalo:</p>
-    <input type="text" id="lead-name" class="field" placeholder="Il tuo nome" />
-    <input type="tel" id="lead-phone" class="field" placeholder="Numero WhatsApp" />
-    <button class="btn-gold" id="btn-unlock">SBLOCCA REGALO 🎁</button>
-  </div>
-
-  <div id="screen-confirm" class="screen">
-    <h2 style="font-family:'Playfair Display'; text-align:center; font-size: 1.5rem; font-weight: bold; color: var(--dark);">✅ Grazie mille!</h2>
-    <p style="text-align:center; color: var(--soft); margin-top: 10px;">Abbiamo ricevuto i tuoi dati. Il regalo è in arrivo su WhatsApp!</p>
-  </div>
-</div>
-
 <script>
-  // IL TUO LINK CORRETTO
-  const GOOGLE_URL = "https://script.google.com/macros/s/AKfycbwOHL3KoHXvfXA4JMwyJzdlnUs_CkvOzAU3SnQyivjmksqC1ppLIIH5mioS2s67tvrG/exec";
+  // URL del tuo Google Script aggiornato
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwbqvxy_lUF4lKcPodlt9PmLL4ohDrPziG5_X22TKPdG-v_Z6_0EIuuZHV4-8RF1UTI/exec';
   
-  let userRating = 0;
+  let currentRating = 0;
 
-  // Gestione click stelle
-  document.getElementById('stars-container').addEventListener('click', (e) => {
-    if(e.target.classList.contains('star')) {
-      userRating = e.target.dataset.value;
-      
-      // Colora le stelle
-      document.querySelectorAll('.star').forEach((s, i) => {
-        if(i < userRating) s.classList.add('selected');
-        else s.classList.remove('selected');
+  // Gestione delle stelline (per farle illuminare)
+  document.querySelectorAll('.star').forEach(star => {
+    star.addEventListener('click', () => {
+      currentRating = star.getAttribute('data-value');
+      document.querySelectorAll('.star').forEach(s => {
+        s.style.color = s.getAttribute('data-value') <= currentRating ? 'var(--gold)' : '#d9cfc0';
       });
-
-      // Passa allo schermo successivo dopo un attimo
+      // Dopo il voto, passa alla schermata dati (se il tuo sito lo prevede)
       setTimeout(() => {
         document.getElementById('screen-rating').classList.remove('active');
-        document.getElementById('screen-lead').classList.add('active');
+        document.getElementById('screen-form').classList.add('active');
       }, 400);
-    }
+    });
   });
 
-  // Gestione invio dati
-  document.getElementById('btn-unlock').addEventListener('click', async () => {
-    const nome = document.getElementById('lead-name').value;
-    const tel = document.getElementById('lead-phone').value;
+  // Funzione per inviare i dati al foglio Google
+  function inviaDati() {
+    const nome = document.querySelector('input[placeholder="Il tuo nome"]').value;
+    const numero = document.querySelector('input[placeholder="Il tuo numero"]').value;
 
-    if(!nome || !tel) {
-      alert("Per favore, inserisci nome e telefono!");
+    if(!nome || !numero) {
+      alert("Per favore, inserisci nome e numero.");
       return;
     }
 
-    document.getElementById('btn-unlock').innerText = "Invio in corso...";
-    document.getElementById('btn-unlock').disabled = true;
-    
-    try {
-      // Invia i dati a Google Sheets
-      await fetch(GOOGLE_URL, {
-        method: 'POST',
-        mode: 'no-cors', // Necessario per evitare errori CORS con Google Apps Script
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nome: nome,
-          telefono: tel,
-          rating: userRating
-        })
-      });
+    const data = {
+      nome: nome,
+      numero: numero,
+      rating: currentRating
+    };
 
-      // Mostra conferma
-      document.getElementById('screen-lead').classList.remove('active');
-      document.getElementById('screen-confirm').classList.add('active');
-    } catch(error) {
-      console.error("Errore:", error);
-      alert("C'è stato un errore. Riprova tra un momento.");
-      document.getElementById('btn-unlock').innerText = "SBLOCCA REGALO 🎁";
-      document.getElementById('btn-unlock').disabled = false;
-    }
-  });
+    fetch(scriptURL, { 
+      method: 'POST', 
+      mode: 'no-cors',
+      cache: 'no-cache',
+      body: JSON.stringify(data) 
+    })
+    .then(() => {
+      alert('Grazie! Riceverai il tuo regalo su WhatsApp 🎁');
+      location.reload(); // Ricarica la pagina per resettare
+    })
+    .catch(error => console.error('Errore!', error.message));
+  }
+  
+  // Collega la funzione al tuo bottone finale
+  // Assicurati che il tuo bottone abbia: onclick="inviaDati()"
 </script>
-
-</body>
-</html>
