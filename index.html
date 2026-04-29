@@ -1,74 +1,583 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recensione Liko</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #fdf6ec; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 90%; max-width: 380px; text-align: center; }
-        .star { font-size: 45px; cursor: pointer; color: #d9cfc0; transition: 0.2s; }
-        .star.active { color: #c9a84c; }
-        .hidden { display: none; }
-        input { width: 100%; padding: 14px; margin: 8px 0; border: 1.5px solid #e8dfc8; border-radius: 12px; outline: none; font-size: 16px; }
-        button { background: #c9a84c; color: white; border: none; padding: 16px; width: 100%; border-radius: 50px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La tua esperienza</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #f0d080;
+      --cream: #fdf6ec;
+      --dark: #1a1208;
+      --soft: #7a6a50;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background-image: radial-gradient(ellipse at 20% 80%, rgba(201,168,76,0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 10%, rgba(201,168,76,0.06) 0%, transparent 50%);
+    }
+
+    h1, h2, .serif { font-family: 'Playfair Display', serif; }
+
+    /* ── Wrapper principale ── */
+    #app {
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+    }
+
+    /* ── Schermata generica ── */
+    .screen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(24px);
+      pointer-events: none;
+      transition: opacity 0.45s ease, transform 0.45s ease;
+      background: #fff;
+      border-radius: 28px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 8px 48px rgba(26,18,8,0.10), 0 1px 0 rgba(201,168,76,0.15);
+      border: 1px solid rgba(201,168,76,0.18);
+    }
+
+    .screen.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+      position: relative; /* prende spazio nel flow solo quella attiva */
+    }
+
+    /* ── Logo placeholder ── */
+    .logo-ring {
+      width: 82px; height: 82px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem;
+      background: linear-gradient(135deg, #fff9ee, #fff);
+      box-shadow: 0 0 0 6px rgba(201,168,76,0.08);
+    }
+
+    /* ── Stelle ── */
+    .stars { display: flex; gap: 10px; justify-content: center; margin: 1.5rem 0; }
+
+    .star {
+      font-size: 2.6rem;
+      cursor: pointer;
+      color: #d9cfc0;
+      transition: color 0.18s, transform 0.18s;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .star:hover, .star.hovered { color: var(--gold); transform: scale(1.18); }
+    .star.selected { color: var(--gold); }
+
+    /* ── Bottoni ── */
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), #b8912e);
+      color: #fff;
+      border: none;
+      border-radius: 100px;
+      padding: 0.9rem 1.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      box-shadow: 0 4px 18px rgba(201,168,76,0.35);
+    }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.40); }
+    .btn-gold:active { transform: translateY(0); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--soft);
+      border: 1.5px solid #e0d5c5;
+      border-radius: 100px;
+      padding: 0.75rem 1.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      width: 100%;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── Input ── */
+    .field {
+      width: 100%;
+      background: #faf7f2;
+      border: 1.5px solid #e8dfc8;
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.97rem;
+      color: var(--dark);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 0.85rem;
+    }
+    .field:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.12); }
+    .field::placeholder { color: #b5a98a; }
+
+    textarea.field { resize: none; min-height: 100px; }
+
+    /* ── Divider decorativo ── */
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 1.25rem 0;
+      color: #c8bda5;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, #e0d5c5, transparent);
+    }
+
+    /* ── Privacy micro-text ── */
+    .privacy {
+      font-size: 0.72rem;
+      color: #b0a48a;
+      text-align: center;
+      margin-top: 0.75rem;
+      line-height: 1.5;
+    }
+    .privacy a { color: var(--gold); text-decoration: none; }
+
+    /* ── Confetti emoji ── */
+    @keyframes pop { 0%{transform:scale(0) rotate(-15deg)} 60%{transform:scale(1.2) rotate(5deg)} 100%{transform:scale(1) rotate(0)} }
+    .pop { animation: pop 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+    /* ── Pulsante Google Maps ── */
+    .btn-maps {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      background: #fff;
+      border: 2px solid var(--gold);
+      color: var(--dark);
+      border-radius: 100px;
+      padding: 0.9rem 1.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.97rem;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s, color 0.2s;
+      text-decoration: none;
+    }
+    .btn-maps:hover { background: var(--gold); color: #fff; }
+
+    /* ── Badge animato ── */
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .float { animation: float 2.8s ease-in-out infinite; }
+
+    .confetti-emoji { font-size: 2.8rem; display:block; text-align:center; margin-bottom:0.5rem; }
+
+    /* ── Checkmark schermata finale ── */
+    .checkmark { font-size: 3.5rem; display:block; text-align:center; }
+
+    /* ── Utility ── */
+    .text-gold { color: var(--gold); }
+    .text-soft { color: var(--soft); }
+    .text-dark { color: var(--dark); }
+  </style>
 </head>
 <body>
 
-<div class="card" id="step1">
-    <h2 class="text-xl font-bold mb-6 text-gray-800">Come valuti la tua esperienza?</h2>
-    <div class="flex justify-around mb-4">
-        <span class="star" onclick="vota(1)">★</span>
-        <span class="star" onclick="vota(2)">★</span>
-        <span class="star" onclick="vota(3)">★</span>
-        <span class="star" onclick="vota(4)">★</span>
-        <span class="star" onclick="vota(5)">★</span>
-    </div>
-</div>
+<div id="app">
 
-<div class="card hidden" id="step2">
-    <h2 class="text-xl font-bold mb-4 text-gray-800">Dove inviamo il regalo?</h2>
-    <input type="text" id="nome" placeholder="Il tuo nome">
-    <input type="tel" id="numero" placeholder="Il tuo numero WhatsApp">
-    <button id="btn" onclick="invia()">Ricevi il regalo 🎁</button>
-</div>
+  <!-- ═══════════════════════════════════════════
+       SCHERMATA 1 — Innesco / Valutazione stelle
+  ════════════════════════════════════════════ -->
+  <div id="screen-rating" class="screen active">
+
+    <!-- Logo placeholder — sostituisci con <img src="logo.png" /> -->
+    <div class="logo-ring">
+      <span style="font-size:2rem;">🌟</span>
+    </div>
+
+    <p class="text-soft text-center text-sm font-medium tracking-widest uppercase mb-1">La tua esperienza</p>
+
+    <h1 class="serif text-dark text-center text-2xl font-bold leading-snug mb-1">
+      Come valuti la tua esperienza?
+    </h1>
+
+    <p class="text-soft text-center text-sm mt-2 mb-0">Tocca le stelle per valutare</p>
+
+    <!-- Stelle cliccabili -->
+    <div class="stars" id="stars-container" aria-label="Valutazione da 1 a 5 stelle">
+      <span class="star" data-value="1" role="button" aria-label="1 stella">★</span>
+      <span class="star" data-value="2" role="button" aria-label="2 stelle">★</span>
+      <span class="star" data-value="3" role="button" aria-label="3 stelle">★</span>
+      <span class="star" data-value="4" role="button" aria-label="4 stelle">★</span>
+      <span class="star" data-value="5" role="button" aria-label="5 stelle">★</span>
+    </div>
+
+    <p class="text-center text-xs text-soft opacity-60 mt-1">
+      Nessun account richiesto · 10 secondi
+    </p>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCHERMATA 2a — Feedback negativo (1-3 stelle)
+  ════════════════════════════════════════════ -->
+  <div id="screen-negative" class="screen">
+
+    <div class="text-center mb-4">
+      <span style="font-size:2.4rem;">🙏</span>
+      <h2 class="serif text-dark text-xl font-bold mt-2">Ci dispiace davvero</h2>
+      <p class="text-soft text-sm mt-2 leading-relaxed">
+        Il tuo parere è prezioso. Dicci in privato cosa possiamo migliorare: ti promettiamo che leggiamo ogni messaggio.
+      </p>
+    </div>
+
+    <textarea
+      id="negative-feedback"
+      class="field"
+      placeholder="Raccontaci cosa non ha funzionato…"
+      rows="4"
+    ></textarea>
+
+    <button class="btn-gold" id="btn-send-negative">Invia il feedback privato</button>
+
+    <button class="btn-outline mt-3" id="btn-skip-negative">Preferisco non lasciare commenti</button>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCHERMATA 2b — Ringraziamento feedback negativo
+  ════════════════════════════════════════════ -->
+  <div id="screen-negative-thanks" class="screen">
+    <div class="text-center py-4">
+      <span class="checkmark">💌</span>
+      <h2 class="serif text-dark text-xl font-bold mt-3">Grazie mille</h2>
+      <p class="text-soft text-sm mt-2 leading-relaxed">
+        Il tuo messaggio è stato ricevuto. Lavoreremo per offrire un'esperienza migliore la prossima volta.
+      </p>
+      <p class="text-gold font-medium text-sm mt-4">Speriamo di rivederti presto 🌿</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCHERMATA 3 — Cattura dati (4-5 stelle)
+  ════════════════════════════════════════════ -->
+  <div id="screen-lead" class="screen">
+
+    <span class="confetti-emoji float">🎉</span>
+
+    <h2 class="serif text-dark text-center text-2xl font-bold leading-snug">
+      Fantastico!
+    </h2>
+
+    <div class="divider">Il regalo dello Chef</div>
+
+    <p class="text-soft text-center text-sm leading-relaxed mb-4">
+      Per ringraziarti, lo Chef vuole offrirti un <strong class="text-dark">regalo esclusivo</strong>.<br>
+      Dove possiamo inviartelo?
+    </p>
+
+    <!-- Campo Nome -->
+    <input
+      type="text"
+      id="lead-name"
+      class="field"
+      placeholder="Il tuo nome"
+      autocomplete="given-name"
+    />
+
+    <!-- Campo WhatsApp -->
+    <input
+      type="tel"
+      id="lead-phone"
+      class="field"
+      placeholder="Numero WhatsApp (es. 3331234567)"
+      autocomplete="tel"
+    />
+
+    <button class="btn-gold" id="btn-unlock">SBLOCCA IL REGALO 🎁</button>
+
+    <!-- Micro-testo privacy GDPR -->
+    <p class="privacy">
+      Inviando i tuoi dati accetti la nostra
+      <a href="/privacy" target="_blank">Privacy Policy</a> (D.Lgs. 196/03 e GDPR 2016/679).
+      I tuoi dati saranno trattati solo per inviarti comunicazioni dal locale.
+      Non verranno ceduti a terzi e potrai cancellarti in qualsiasi momento.
+    </p>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCHERMATA 4 — Conferma + Social Proof
+  ════════════════════════════════════════════ -->
+  <div id="screen-confirm" class="screen">
+
+    <div class="text-center mb-3">
+      <span style="display:flex;justify-content:center;align-items:center;margin-bottom:0.25rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="64" height="64" class="pop">
+          <circle cx="24" cy="24" r="24" fill="#25D366"/>
+          <path d="M35.2 12.8A15.8 15.8 0 0 0 24 8C15.2 8 8 15.2 8 24c0 2.8.7 5.5 2.1 7.9L8 40l8.3-2.2A15.9 15.9 0 0 0 24 40c8.8 0 16-7.2 16-16 0-4.3-1.7-8.3-4.8-11.2zM24 37.3c-2.5 0-4.9-.7-7-1.9l-.5-.3-5 1.3 1.3-4.8-.3-.5A13.2 13.2 0 0 1 10.7 24c0-7.3 5.9-13.3 13.3-13.3 3.5 0 6.8 1.4 9.3 3.8 2.5 2.5 3.8 5.8 3.8 9.3 0 7.4-6 13.5-13.1 13.5zm7.3-9.9c-.4-.2-2.3-1.1-2.7-1.3-.4-.1-.6-.2-.9.2-.2.4-.9 1.2-1.1 1.5-.2.2-.4.3-.8.1-.4-.2-1.6-.6-3.1-1.9-1.1-1-1.9-2.2-2.1-2.6-.2-.4 0-.6.2-.8l.6-.7c.2-.2.2-.4.4-.6.1-.2 0-.4 0-.6-.1-.2-.9-2.1-1.2-2.8-.3-.7-.6-.6-.9-.6h-.7c-.2 0-.6.1-.9.4-.3.3-1.2 1.2-1.2 2.8s1.2 3.3 1.4 3.5c.2.2 2.4 3.6 5.7 5.1 2 .9 2.8 1 3.8.8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.1-.3-.2-.7-.4z" fill="#fff"/>
+        </svg>
+      </span>
+      <h2 class="serif text-dark text-2xl font-bold mt-2">Confermato!</h2>
+      <p class="text-soft text-sm mt-2 leading-relaxed">
+        Il tuo regalo è in arrivo su WhatsApp. Tienilo d'occhio 🔔
+      </p>
+    </div>
+
+    <div class="divider">Un ultimo favore</div>
+
+    <p class="text-dark text-center text-sm leading-relaxed mb-4">
+      Mentre aspetti, ti andrebbe di condividere la tua esperienza?<br>
+      <span class="text-soft text-xs">Aiuti altre persone a scoprirci 🙏</span>
+    </p>
+
+    <!--
+      ⚠️  SOSTITUISCI L'href CON IL LINK REALE DELLA TUA PAGINA GOOGLE MAPS
+      Esempio: https://maps.app.goo.gl/XXXXXX
+    -->
+    <a
+      id="btn-maps"
+      href="https://maps.google.com"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="btn-maps"
+    >
+      <svg width="20" height="20" viewBox="0 0 48 48" fill="none">
+        <path d="M24 4C15.163 4 8 11.163 8 20c0 12.5 16 28 16 28s16-15.5 16-28c0-8.837-7.163-16-16-16z" fill="#EA4335"/>
+        <circle cx="24" cy="20" r="6" fill="#fff"/>
+      </svg>
+      RECENSISCI SU GOOGLE MAPS
+    </a>
+
+    <p class="text-center text-xs text-soft opacity-50 mt-4">Grazie di cuore ❤️</p>
+
+  </div>
+
+</div><!-- /app -->
+
 
 <script>
-    // IL TUO NUOVISSIMO URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyKi4mgXpdPaKRFi_9YeNUQLD-mY5FizoJK-k_B5b3smoomwMdkqZYrl1KT4hi1e_km/exec';
-    
-    let rating = 0;
+  /* ═══════════════════════════════════════════════════════════════
+     NEURO-FUNNEL JS — Lead Generation per Ristoranti
+     Autore: generato con Claude · Aggiorna i webhook nelle sezioni segnate
+  ════════════════════════════════════════════════════════════════ */
 
-    function vota(n) {
-        rating = n;
-        document.getElementById('step1').classList.add('hidden');
-        document.getElementById('step2').classList.remove('hidden');
+  // ── Selettori schermata ──
+  const screens = {
+    rating:         document.getElementById('screen-rating'),
+    negative:       document.getElementById('screen-negative'),
+    negativeThanks: document.getElementById('screen-negative-thanks'),
+    lead:           document.getElementById('screen-lead'),
+    confirm:        document.getElementById('screen-confirm'),
+  };
+
+  // ── Funzione cambio schermata con transizione fluida ──
+  function showScreen(name) {
+    // Nascondi tutte le schermate
+    Object.values(screens).forEach(s => {
+      s.classList.remove('active');
+    });
+
+    // Mostra quella richiesta con un piccolo delay per triggerare la transizione CSS
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        screens[name].classList.add('active');
+        screens[name].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    });
+  }
+
+  // ══════════════════════════════════════
+  //  BLOCCO 1 — Logica stelle
+  // ══════════════════════════════════════
+  const stars      = document.querySelectorAll('.star');
+  let currentRating = 0;
+
+  // Hover effect
+  stars.forEach((star, idx) => {
+    star.addEventListener('mouseenter', () => {
+      stars.forEach((s, i) => {
+        s.classList.toggle('hovered', i <= idx);
+        s.classList.remove('selected');
+      });
+    });
+    star.addEventListener('mouseleave', () => {
+      stars.forEach(s => s.classList.remove('hovered'));
+      applySelected(currentRating);
+    });
+  });
+
+  // Click su stella
+  document.getElementById('stars-container').addEventListener('click', (e) => {
+    const star = e.target.closest('.star');
+    if (!star) return;
+
+    currentRating = parseInt(star.dataset.value, 10);
+    applySelected(currentRating);
+
+    // Micro delay per far vedere la selezione prima di cambiare schermata
+    setTimeout(() => {
+      if (currentRating <= 3) {
+        showScreen('negative');
+      } else {
+        // ── Utente soddisfatto: attiva il funnel lead ──
+        showScreen('lead');
+      }
+    }, 320);
+  });
+
+  function applySelected(rating) {
+    stars.forEach((s, i) => {
+      s.classList.toggle('selected', i < rating);
+    });
+  }
+
+  // ══════════════════════════════════════
+  //  CONFIGURAZIONE WEBHOOK
+  //  Un solo endpoint Make.com per entrambi i flussi
+  // ══════════════════════════════════════
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzhJ40U5xAbOTB2RrCHAu8iT43DxgvkIZRS55lBiSXusC6vdUmW6yfpyGZpTv9mfHD1/exec';
+
+  // ── Helper: invia dati al webhook in modo silenzioso ──
+  // Usa try/catch + Promise.race con timeout di 6s:
+  // l'utente passa SEMPRE alla schermata successiva, anche se il server è lento o KO.
+  async function sendToWebhook(payload) {
+    const timeout = new Promise(resolve => setTimeout(resolve, 6000)); // max 6s attesa
+    try {
+      await Promise.race([
+        fetch(WEBHOOK_URL, {
+          method: 'POST',
+          mode: 'no-cors', // necessario per Google Apps Script da browser
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }),
+        timeout
+      ]);
+    } catch (err) {
+      // Errore di rete: logghiamo ma non blocchiamo mai il cliente
+      console.warn('[Webhook] Invio non riuscito:', err);
+    }
+  }
+
+  // ── Helper: formatta la data in italiano (es. 28/04/2026 14:32) ──
+  function dataOra() {
+    return new Date().toLocaleString('it-IT', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  // ── Helper: feedback visivo sul bottone durante l'invio ──
+  function setButtonLoading(btn, loading) {
+    if (loading) {
+      btn.dataset.originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Attendere…';
+      btn.disabled = true;
+      btn.style.opacity = '0.75';
+    } else {
+      btn.innerHTML = btn.dataset.originalText || btn.innerHTML;
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    }
+  }
+
+  // ══════════════════════════════════════
+  //  BLOCCO 2 — Feedback negativo (1-3 stelle)
+  // ══════════════════════════════════════
+  document.getElementById('btn-send-negative').addEventListener('click', async () => {
+    const feedbackText = document.getElementById('negative-feedback').value.trim();
+
+    if (!feedbackText) {
+      document.getElementById('negative-feedback').focus();
+      document.getElementById('negative-feedback').style.borderColor = '#e07070';
+      return;
     }
 
-    function invia() {
-        const nome = document.getElementById('nome').value;
-        const numero = document.getElementById('numero').value;
-        const btn = document.getElementById('btn');
+    const btn = document.getElementById('btn-send-negative');
+    setButtonLoading(btn, true);
 
-        if(!nome || !numero) return alert("Inserisci i dati!");
+    // Payload inviato a Make.com per i feedback negativi
+    await sendToWebhook({
+      tipo:           'feedback_negativo',
+      feedback_testo: feedbackText,
+      rating:         currentRating,
+      data:           dataOra()
+    });
 
-        btn.innerText = "Invio...";
-        btn.disabled = true;
+    // L'utente passa alla schermata di ringraziamento SEMPRE, webhook o no
+    showScreen('negativeThanks');
+  });
 
-        // Metodo "Image Beacon": il più potente per evitare blocchi
-        const finale = scriptURL + "?nome=" + encodeURIComponent(nome) + "&numero=" + encodeURIComponent(numero) + "&rating=" + rating;
-        
-        const img = new Image();
-        img.src = finale;
+  document.getElementById('btn-skip-negative').addEventListener('click', () => {
+    showScreen('negativeThanks');
+  });
 
-        // Aspettiamo un secondo e confermiamo
-        setTimeout(() => {
-            alert("Grazie! Riceverai il tuo regalo su WhatsApp 🎁");
-            location.reload();
-        }, 1000);
+  // ══════════════════════════════════════
+  //  BLOCCO 3 — Cattura lead (4-5 stelle)
+  // ══════════════════════════════════════
+  document.getElementById('btn-unlock').addEventListener('click', async () => {
+    const nome    = document.getElementById('lead-name').value.trim();
+    const telefono = document.getElementById('lead-phone').value.trim();
+
+    // Validazione base
+    if (!nome) {
+      document.getElementById('lead-name').focus();
+      document.getElementById('lead-name').style.borderColor = '#e07070';
+      return;
     }
+    if (!telefono || telefono.replace(/\D/g, '').length < 9) {
+      document.getElementById('lead-phone').focus();
+      document.getElementById('lead-phone').style.borderColor = '#e07070';
+      return;
+    }
+
+    const btn = document.getElementById('btn-unlock');
+    setButtonLoading(btn, true);
+
+    // Payload inviato a Make.com per i lead positivi
+    await sendToWebhook({
+      tipo:         'lead_positivo',
+      nome:         nome,
+      telefono:     telefono,
+      rating:       currentRating,
+      data:         dataOra(),
+      gdpr_consent: true  // consenso acquisito via micro-testo GDPR visibile sul form
+    });
+
+    // L'utente arriva SEMPRE alla conferma finale, qualunque cosa risponda il server
+    showScreen('confirm');
+  });
+
+  // ══════════════════════════════════════
+  //  BLOCCO 4 — Reset colore campi su input
+  // ══════════════════════════════════════
+  ['lead-name', 'lead-phone', 'negative-feedback'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => el.style.borderColor = '');
+  });
+
 </script>
 
 </body>
