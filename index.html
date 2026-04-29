@@ -9,32 +9,69 @@
     <style>
         :root { --gold: #c9a84c; --cream: #fdf6ec; --dark: #1a1208; --soft: #7a6a50; }
         body { font-family: 'DM Sans', sans-serif; background: var(--cream); min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; }
-        .screen { background: #fff; border-radius: 28px; padding: 2.5rem 2rem; box-shadow: 0 8px 48px rgba(0,0,0,0.1); max-width: 420px; width: 90%; display: none; }
+        
+        /* Contenitore principale */
+        .screen { 
+            background: #fff; 
+            border-radius: 28px; 
+            padding: 2.5rem 2rem; 
+            box-shadow: 0 8px 48px rgba(0,0,0,0.1); 
+            max-width: 420px; 
+            width: 90%; 
+            display: none; 
+            text-align: center;
+        }
         .screen.active { display: block; }
+
+        /* Stelline */
         .stars { display: flex; gap: 10px; justify-content: center; margin: 1.5rem 0; }
         .star { font-size: 2.6rem; cursor: pointer; color: #d9cfc0; transition: transform 0.2s; }
-        .star.selected { color: var(--gold); }
-        .btn-gold { background: var(--gold); color: #fff; border-radius: 100px; padding: 0.9rem; width: 100%; font-weight: 600; margin-top: 1rem; transition: opacity 0.2s; }
-        .field { width: 100%; background: #faf7f2; border: 1.5px solid #e8dfc8; border-radius: 14px; padding: 0.85rem; margin-bottom: 0.85rem; outline: none; }
+        
+        /* Campi di testo */
+        .field { 
+            width: 100%; 
+            background: #faf7f2; 
+            border: 1.5px solid #e8dfc8; 
+            border-radius: 14px; 
+            padding: 1rem; 
+            margin-bottom: 1rem; 
+            outline: none;
+            font-size: 1rem;
+        }
+
+        /* Bottone Oro */
+        .btn-gold { 
+            background: var(--gold); 
+            color: #fff; 
+            border-radius: 100px; 
+            padding: 1rem; 
+            width: 100%; 
+            font-weight: 600; 
+            margin-top: 0.5rem;
+            cursor: pointer;
+            border: none;
+        }
+        
+        h1 { margin-bottom: 1.5rem; line-height: 1.2; }
     </style>
 </head>
 <body>
 
 <div id="app">
     <div id="screen-rating" class="screen active">
-        <h1 style="font-family:'Playfair Display'; text-align:center; font-size: 1.5rem; font-weight: bold; color: var(--dark);">Come valuti l'esperienza?</h1>
-        <div class="stars" id="stars-container">
+        <h1 style="font-family:'Playfair Display'; font-size: 1.6rem; font-weight: bold; color: var(--dark);">Come valuti la tua esperienza?</h1>
+        <div class="stars">
             <span class="star" data-value="1">★</span>
             <span class="star" data-value="2">★</span>
             <span class="star" data-value="3">★</span>
             <span class="star" data-value="4">★</span>
             <span class="star" data-value="5">★</span>
         </div>
-        <p style="text-align:center; color: var(--soft); font-size: 0.9rem;">Tocca una stella per votare</p>
+        <p style="color: var(--soft); font-size: 0.9rem;">Tocca una stella per continuare</p>
     </div>
 
     <div id="screen-form" class="screen">
-        <h1 style="font-family:'Playfair Display'; text-align:center; font-size: 1.5rem; font-weight: bold; color: var(--dark); margin-bottom: 1rem;">Dove ti mandiamo il regalo?</h1>
+        <h1 style="font-family:'Playfair Display'; font-size: 1.6rem; font-weight: bold; color: var(--dark);">Dove ti mandiamo il regalo?</h1>
         <input type="text" id="input-nome" placeholder="Il tuo nome" class="field">
         <input type="tel" id="input-numero" placeholder="Il tuo numero" class="field">
         <button onclick="inviaDati()" class="btn-gold">Ricevi il regalo 🎁</button>
@@ -42,51 +79,44 @@
 </div>
 
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbwbqvxy_lUF4lKcPodlt9PmLL4ohDrPziG5_X22TKPdG-v_Z6_0EIuuZHV4-8RF1UTI/exec';
-  let currentRating = 0;
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwbqvxy_lUF4lKcPodlt9PmLL4ohDrPziG5_X22TKPdG-v_Z6_0EIuuZHV4-8RF1UTI/exec';
+    let currentRating = 0;
 
-  // Gestione Stelline
-  document.querySelectorAll('.star').forEach(star => {
-    star.addEventListener('click', () => {
-      currentRating = star.getAttribute('data-value');
-      document.querySelectorAll('.star').forEach(s => {
-        s.style.color = s.getAttribute('data-value') <= currentRating ? 'var(--gold)' : '#d9cfc0';
-      });
-      setTimeout(() => {
-        document.getElementById('screen-rating').classList.remove('active');
-        document.getElementById('screen-form').classList.add('active');
-      }, 400);
+    // Gestione clic stelline
+    document.querySelectorAll('.star').forEach(star => {
+        star.addEventListener('click', () => {
+            currentRating = star.getAttribute('data-value');
+            // Colora le stelle
+            document.querySelectorAll('.star').forEach(s => {
+                s.style.color = s.getAttribute('data-value') <= currentRating ? '#c9a84c' : '#d9cfc0';
+            });
+            // Cambia schermata
+            setTimeout(() => {
+                document.getElementById('screen-rating').classList.remove('active');
+                document.getElementById('screen-form').classList.add('active');
+            }, 400);
+        });
     });
-  });
 
-  // Invio Dati
-  function inviaDati() {
-    const nome = document.getElementById('input-nome').value;
-    const numero = document.getElementById('input-numero').value;
+    // Funzione invio dati
+    function inviaDati() {
+        const nome = document.getElementById('input-nome').value;
+        const numero = document.getElementById('input-numero').value;
 
-    if(!nome || !numero) {
-      alert("Per favore, inserisci nome e numero.");
-      return;
+        if (!nome || !numero) {
+            alert("Inserisci i dati per ricevere il regalo!");
+            return;
+        }
+
+        const data = { nome, numero, rating: currentRating };
+
+        fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) })
+        .then(() => {
+            alert('Grazie! Riceverai il tuo regalo su WhatsApp 🎁');
+            window.location.reload();
+        })
+        .catch(() => alert('Errore! Riprova tra poco.'));
     }
-
-    const data = {
-      nome: nome,
-      numero: numero,
-      rating: currentRating
-    };
-
-    fetch(scriptURL, { 
-      method: 'POST', 
-      mode: 'no-cors',
-      cache: 'no-cache',
-      body: JSON.stringify(data) 
-    })
-    .then(() => {
-      alert('Grazie! Riceverai il tuo regalo su WhatsApp 🎁');
-      location.reload(); 
-    })
-    .catch(error => alert('Errore nell\'invio. Riprova!'));
-  }
 </script>
 
 </body>
