@@ -1,95 +1,66 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La tua esperienza</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #c9a84c; --cream: #fdf6ec; --dark: #1a1208; --soft: #7a6a50; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--cream); min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; padding: 20px; }
-        .screen { background: #fff; border-radius: 28px; padding: 2.5rem 2rem; box-shadow: 0 10px 50px rgba(0,0,0,0.1); max-width: 400px; width: 100%; display: none; text-align: center; }
-        .screen.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .stars { display: flex; gap: 12px; justify-content: center; margin: 2rem 0; }
-        .star { font-size: 2.5rem; cursor: pointer; color: #d9cfc0; transition: all 0.2s; }
-        .field { width: 100%; background: #faf7f2; border: 1.5px solid #e8dfc8; border-radius: 16px; padding: 1rem; margin-bottom: 1rem; outline: none; font-size: 1rem; }
-        .btn-gold { background: var(--gold); color: #fff; border-radius: 100px; padding: 1.1rem; width: 100%; font-weight: 600; margin-top: 1rem; cursor: pointer; border: none; }
-        h1 { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; color: var(--dark); margin-bottom: 1rem; }
+        body { background-color: #fdf6ec; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
+        .star { font-size: 40px; cursor: pointer; color: #ccc; }
+        .star.active { color: #c9a84c; }
+        .hidden { display: none; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #e8dfc8; border-radius: 10px; outline: none; font-size: 16px; }
+        button { background: #c9a84c; color: white; border: none; padding: 15px; width: 100%; border-radius: 50px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div id="app">
-    <div id="screen-rating" class="screen active">
-        <h1>Come valuti la tua esperienza?</h1>
-        <div class="stars">
-            <span class="star" data-value="1">★</span>
-            <span class="star" data-value="2">★</span>
-            <span class="star" data-value="3">★</span>
-            <span class="star" data-value="4">★</span>
-            <span class="star" data-value="5">★</span>
-        </div>
-        <p style="color: var(--soft); font-size: 0.9rem;">Tocca una stella per votare</p>
-    </div>
-
-    <div id="screen-form" class="screen">
-        <h1>Dove ti mandiamo il regalo?</h1>
-        <input type="text" id="input-nome" placeholder="Il tuo nome" class="field">
-        <input type="tel" id="input-numero" placeholder="Il tuo numero" class="field">
-        <button onclick="inviaDati()" id="btn-invio" class="btn-gold">Ricevi il regalo 🎁</button>
+<div class="card" id="step1">
+    <h2 style="font-size: 22px; font-weight: bold; margin-bottom: 20px;">Come valuti la tua esperienza?</h2>
+    <div id="rating-stars">
+        <span class="star" onclick="setRating(1)">★</span>
+        <span class="star" onclick="setRating(2)">★</span>
+        <span class="star" onclick="setRating(3)">★</span>
+        <span class="star" onclick="setRating(4)">★</span>
+        <span class="star" onclick="setRating(5)">★</span>
     </div>
 </div>
 
+<div class="card hidden" id="step2">
+    <h2 style="font-size: 22px; font-weight: bold;">Dove ti mandiamo il regalo?</h2>
+    <input type="text" id="nome" placeholder="Il tuo nome">
+    <input type="tel" id="numero" placeholder="Il tuo numero">
+    <button onclick="spedisciTutto()">Ricevi il regalo 🎁</button>
+</div>
+
 <script>
-    // NUOVO URL FORNITO
+    // URL DI OGGI (VERSIONE 5/6)
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzic3JXWsNiPuv2UDYZfUbdAWxS_CAz0dWG-sQP3RV8c9pzBa2Up-SLuBsvJ5zoXkOe/exec';
     
-    let currentRating = 0;
+    let voto = 0;
 
-    // Gestione Stelle
-    document.querySelectorAll('.star').forEach(star => {
-        star.addEventListener('click', () => {
-            currentRating = star.getAttribute('data-value');
-            document.querySelectorAll('.star').forEach(s => {
-                s.style.color = s.getAttribute('data-value') <= currentRating ? '#c9a84c' : '#d9cfc0';
-            });
-            setTimeout(() => {
-                document.getElementById('screen-rating').classList.remove('active');
-                document.getElementById('screen-form').classList.add('active');
-            }, 500);
-        });
-    });
+    function setRating(n) {
+        voto = n;
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
+    }
 
-    // Funzione Invio migliorata per Google Script
-    function inviaDati() {
-        const nome = document.getElementById('input-nome').value;
-        const numero = document.getElementById('input-numero').value;
-        const btn = document.getElementById('btn-invio');
+    function spedisciTutto() {
+        const nome = document.getElementById('nome').value;
+        const numero = document.getElementById('numero').value;
 
-        if (!nome || !numero) {
-            alert("Inserisci nome e numero!");
-            return;
-        }
+        if(!nome || !numero) { alert("Metti i dati!"); return; }
 
-        btn.innerText = "Invio in corso...";
-        btn.disabled = true;
+        // Metodo iper-semplice che ha funzionato ieri
+        const urlFinale = scriptURL + "?nome=" + encodeURIComponent(nome) + "&numero=" + encodeURIComponent(numero) + "&rating=" + voto;
+        
+        // Invio silenzioso
+        fetch(urlFinale, { method: 'GET', mode: 'no-cors' });
 
-        // Prepariamo i dati come parametri URL (più sicuri per Google Script)
-        const finalURL = scriptURL + "?nome=" + encodeURIComponent(nome) + "&numero=" + encodeURIComponent(numero) + "&rating=" + encodeURIComponent(currentRating);
-
-        fetch(finalURL, { method: 'POST' })
-        .then(() => {
-            alert('Grazie! Riceverai il tuo regalo su WhatsApp 🎁');
-            window.location.reload();
-        })
-        .catch(() => {
-            // Spesso Google dà errore CORS anche se l'invio funziona. 
-            // Se arrivi qui, il dato è probabilmente partito comunque.
-            alert('Grazie! Riceverai il tuo regalo su WhatsApp 🎁');
-            window.location.reload();
-        });
+        alert("Grazie! Riceverai il tuo regalo su WhatsApp 🎁");
+        window.location.reload();
     }
 </script>
 
