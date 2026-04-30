@@ -36,7 +36,6 @@ body {
   overflow-x: hidden;
 }
 
-/* BG noise texture */
 body::before {
   content: '';
   position: fixed;
@@ -54,7 +53,6 @@ body::before {
   max-width: 400px;
 }
 
-/* ---- SCREENS ---- */
 .screen {
   display: none;
   animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -66,7 +64,6 @@ body::before {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ---- LOGO ---- */
 .logo {
   font-family: 'Syne', sans-serif;
   font-weight: 800;
@@ -75,9 +72,7 @@ body::before {
   color: var(--white);
   line-height: 1;
 }
-.logo span {
-  color: var(--lime);
-}
+.logo span { color: var(--lime); }
 
 .logo-sub {
   font-size: 13px;
@@ -88,7 +83,6 @@ body::before {
   font-weight: 300;
 }
 
-/* ---- CARD ---- */
 .card {
   background: var(--gray);
   border-radius: 20px;
@@ -107,7 +101,6 @@ body::before {
   pointer-events: none;
 }
 
-/* ---- STEP 1: STARS ---- */
 .prompt {
   font-family: 'Syne', sans-serif;
   font-size: 22px;
@@ -157,7 +150,6 @@ body::before {
   transition: opacity 0.2s;
 }
 
-/* ---- STEP 2: FORM ---- */
 .gift-msg {
   font-family: 'Syne', sans-serif;
   font-size: 18px;
@@ -168,9 +160,7 @@ body::before {
 .gift-msg.positive { color: var(--lime); }
 .gift-msg.negative { color: #FF9940; }
 
-.field {
-  margin-bottom: 14px;
-}
+.field { margin-bottom: 14px; }
 
 .field label {
   display: block;
@@ -227,7 +217,6 @@ body::before {
   transform: none;
 }
 
-/* ---- STEP 3A: POSITIVE ---- */
 .big-check {
   width: 64px; height: 64px;
   background: var(--lime);
@@ -294,7 +283,6 @@ body::before {
 }
 .btn-skip:hover { color: var(--white); }
 
-/* ---- STEP 3B: NEGATIVE ---- */
 .sad-emoji {
   font-size: 52px;
   display: block;
@@ -308,14 +296,12 @@ body::before {
   75% { transform: rotate(8deg); }
 }
 
-/* ---- DIVIDER ---- */
 .divider {
   height: 1px;
   background: var(--gray2);
   margin: 20px 0;
 }
 
-/* ---- RATING BADGE ---- */
 .rating-badge {
   display: inline-flex;
   align-items: center;
@@ -330,7 +316,6 @@ body::before {
   margin-bottom: 16px;
 }
 
-/* ---- LOADING DOTS ---- */
 .dots {
   display: inline-flex;
   gap: 4px;
@@ -351,7 +336,6 @@ body::before {
   40% { transform: translateY(-4px); opacity: 1; }
 }
 
-/* PROGRESS BAR */
 .progress {
   display: flex;
   gap: 6px;
@@ -370,46 +354,39 @@ body::before {
 <body>
 <div class="wrap">
 
-  <!-- ============ SCREEN 1: RATING ============ -->
+  <!-- SCREEN 1: RATING -->
   <div class="screen active" id="screen1">
     <div style="text-align:center; margin-bottom:32px;">
       <div class="logo">MOMO</div>
       <div class="logo-sub">La tua opinione conta</div>
     </div>
-
     <div class="card">
       <div class="progress">
-        <div class="progress-dot done" id="p1"></div>
-        <div class="progress-dot" id="p2"></div>
-        <div class="progress-dot" id="p3"></div>
+        <div class="progress-dot done"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
       </div>
-
       <div class="prompt">Come è stata<br>la tua esperienza?</div>
       <div class="prompt-sub">Tocca una stella per valutare</div>
-
       <div class="stars-row" id="starsRow"></div>
       <div class="star-label" id="starLabel"></div>
     </div>
   </div>
 
-  <!-- ============ SCREEN 2: FORM ============ -->
+  <!-- SCREEN 2: FORM -->
   <div class="screen" id="screen2">
     <div style="text-align:center; margin-bottom:32px;">
       <div class="logo">MOMO</div>
     </div>
-
     <div class="card">
       <div class="progress">
         <div class="progress-dot done"></div>
-        <div class="progress-dot done" id="p2b"></div>
-        <div class="progress-dot" id="p3b"></div>
+        <div class="progress-dot done"></div>
+        <div class="progress-dot"></div>
       </div>
-
       <div class="rating-badge" id="ratingBadge"></div>
       <div class="gift-msg" id="giftMsg"></div>
-
       <div class="divider"></div>
-
       <div class="field">
         <label>Il tuo nome</label>
         <input type="text" id="inputNome" placeholder="Es. Marco" autocomplete="name">
@@ -418,62 +395,55 @@ body::before {
         <label>Numero WhatsApp</label>
         <input type="tel" id="inputPhone" placeholder="Es. 333 123 4567" autocomplete="tel">
       </div>
-
       <button class="btn-main" id="btnRiscatta" onclick="submitForm()">
         RISCATTA REGALO 🎁
       </button>
-
       <label style="display:flex; align-items:flex-start; gap:10px; margin-top:14px; cursor:pointer;">
         <input type="checkbox" id="privacyCheck" style="margin-top:3px; accent-color:var(--lime); width:15px; height:15px; flex-shrink:0; cursor:pointer;">
         <span style="font-size:12px; color:var(--muted); line-height:1.5;">
-          Acconsento al trattamento dei miei dati personali per ricevere comunicazioni promozionali. 
+          Acconsento al trattamento dei miei dati personali per ricevere comunicazioni promozionali.
           <a href="#" style="color:var(--lime); text-decoration:none;">Privacy Policy</a>
         </span>
       </label>
     </div>
   </div>
 
-  <!-- ============ SCREEN 3A: POSITIVE THANK YOU ============ -->
+  <!-- SCREEN 3A: POSITIVO -->
   <div class="screen" id="screen3a">
     <div style="text-align:center; margin-bottom:32px;">
       <div class="logo">MOMO</div>
     </div>
-
     <div class="card" style="text-align:center;">
       <div class="progress">
         <div class="progress-dot done"></div>
         <div class="progress-dot done"></div>
         <div class="progress-dot done"></div>
       </div>
-
       <div class="big-check">🎁</div>
       <div class="thanks-title">Il regalo è tuo!</div>
       <div class="thanks-sub">
         Ti arriverà una sorpresa via WhatsApp, tieniti aggiornato! 🎉<br><br>
         Un ultimo favore? Lasciaci una recensione su Google — ci aiuta tantissimo! ⭐
       </div>
-
       <a class="btn-google" id="btnGoogle" href="#" target="_blank">
         <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 19 10.5h-7v3h4a4.07 4.07 0 0 1-1.67 2.45l2.67 2.07A7 7 0 0 0 19 10.5a7.16 7.16 0 0 0-.12-1.38"/><path fill="#34A853" d="m5.27 14.24 2.66-2.07a4.08 4.08 0 0 1 0-4.33L5.27 5.77A7 7 0 0 0 5 12a7 7 0 0 0 .27 2.24"/><path fill="#4A90D9" d="M12 5c1.74 0 3.29.6 4.52 1.78L19 4.27A7 7 0 0 0 12 2a7 7 0 0 0-6.73 3.77l2.66 2.07A4.08 4.08 0 0 1 12 5"/><path fill="#FBBC05" d="M12 19a4.08 4.08 0 0 1-4.07-3.83l-2.66 2.06A7 7 0 0 0 12 22a7 7 0 0 0 6.69-4.45l-2.67-2.07A4.07 4.07 0 0 1 12 19"/></svg>
         Recensisci su Google Maps
       </a>
-      <button class="btn-skip" onclick="goToScreen('screen3b', false)">Salta per ora</button>
+      <button class="btn-skip" onclick="goToScreen('screen3b')">Salta per ora</button>
     </div>
   </div>
 
-  <!-- ============ SCREEN 3B: NEGATIVE THANK YOU ============ -->
+  <!-- SCREEN 3B: NEGATIVO -->
   <div class="screen" id="screen3b">
     <div style="text-align:center; margin-bottom:32px;">
       <div class="logo">MOMO</div>
     </div>
-
     <div class="card" style="text-align:center;">
       <div class="progress">
         <div class="progress-dot done"></div>
         <div class="progress-dot done"></div>
         <div class="progress-dot done"></div>
       </div>
-
       <span class="sad-emoji">🙏</span>
       <div class="thanks-title">Grazie mille!</div>
       <div class="thanks-sub">
@@ -486,14 +456,12 @@ body::before {
 </div>
 
 <script>
-  // ---- CONFIG ----
   const SHEETS_URL = "https://script.google.com/macros/s/AKfycbysRvqubhZibkSHcx8_wMEd-desBe_Ehjz3dxQfBTg1NbVvQIN1-_wlnY4zOip0llQ/exec";
   const GOOGLE_MAPS_URL = "https://www.google.com/search?gs_ssp=eJzj4tVP1zc0zMqqNC1Jqyw3YLRSNagwNDZKM0-yTDRMNjExSEtMsjKoSDM0NEpKsTQxMjEyTTZJS_Lizc3PzVdIL81Myc_LTAQAxAYVAQ&q=momo+guidonia&rlz=1C5CHFA_enIT1035IT1035&oq=momo+&gs_lcrp=EgZjaHJvbWUqFQgBEC4YJxivARjHARiABBiKBRiOBTIGCAAQRRg5MhUIARAuGCcYrwEYxwEYgAQYigUYjgUyDAgCEAAYQxiABBiKBTIMCAMQABhDGIAEGIoFMgcIBBAuGIAEMgcIBRAuGIAEMgcIBhAAGIAEMgcIBxAAGIAEMgcICBAAGI8CMgcICRAAGI8C0gEJMzAxNWowajE1qAIJsAIB8QW7l2k0jCabkA&sourceid=chrome&ie=UTF-8";
 
   const starLabels = ['Terribile 😤', 'Non bene 😕', 'Nella media 😐', 'Ottima 😊', 'Eccellente 🤩'];
   let currentRating = 0;
 
-  // ---- SCREEN TRANSITION ----
   function goToScreen(id) {
     if (id === 'screen2') setupScreen2();
     document.querySelectorAll('.screen').forEach(s => {
@@ -509,7 +477,6 @@ body::before {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // ---- RENDER STARS ----
   function renderStars() {
     const row = document.getElementById('starsRow');
     row.innerHTML = '';
@@ -537,7 +504,6 @@ body::before {
     setTimeout(() => goToScreen('screen2'), 500);
   }
 
-  // ---- POPULATE SCREEN 2 ----
   function setupScreen2() {
     const isPositive = currentRating >= 4;
     const badge = document.getElementById('ratingBadge');
@@ -553,7 +519,6 @@ body::before {
     }
   }
 
-  // ---- SUBMIT ----
   async function submitForm() {
     const nome = document.getElementById('inputNome').value.trim();
     const phone = document.getElementById('inputPhone').value.trim();
@@ -570,7 +535,6 @@ body::before {
     btn.disabled = true;
     btn.innerHTML = 'Invio in corso <span class="dots"><span></span><span></span><span></span></span>';
 
-    // Usa un iframe nascosto per aggirare il blocco CORS di Google Scripts
     const params = new URLSearchParams({
       nome: nome,
       telefono: phone,
@@ -578,11 +542,9 @@ body::before {
       tipo: currentRating >= 4 ? 'positivo' : 'negativo'
     });
 
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = SHEETS_URL + '?' + params.toString();
-    document.body.appendChild(iframe);
-    setTimeout(() => document.body.removeChild(iframe), 5000);
+    try {
+      await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+    } catch(e) {}
 
     await new Promise(r => setTimeout(r, 1000));
 
@@ -594,7 +556,6 @@ body::before {
     }
   }
 
-  // ---- SHAKE VALIDATION ----
   function shake(id) {
     const el = document.getElementById(id);
     el.style.borderColor = '#FF4545';
@@ -611,7 +572,6 @@ body::before {
     el.focus();
   }
 
-  // ---- INIT ----
   renderStars();
 </script>
 </body>
