@@ -169,8 +169,23 @@ body::before { content: ''; position: fixed; inset: 0; background-image: url("da
 
 </div>
 
-<script>
-  const SHEETS_URL = "https://script.google.com/macros/s/AKfycbwA5Kqz1bzD8W5jkz6DyBHzyK3YixquyEilzXJWAtZz8UZ8y1wAolXu34CWLIW6iuz6/exec";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDLHhB3eU4OqmkJmqwEKIT0v4twMjvXGfo",
+    authDomain: "liko-229ca.firebaseapp.com",
+    databaseURL: "https://liko-229ca-default-rtdb.firebaseio.com",
+    projectId: "liko-229ca",
+    storageBucket: "liko-229ca.firebasestorage.app",
+    messagingSenderId: "712700067238",
+    appId: "1:712700067238:web:8c5afbdfaa4df419166367"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
   const GOOGLE_MAPS_URL = "https://www.google.com/search?gs_ssp=eJzj4tVP1zc0zMqqNC1Jqyw3YLRSNagwNDZKM0-yTDRMNjExSEtMsjKoSDM0NEpKsTQxMjEyTTZJS_Lizc3PzVdIL81Myc_LTAQAxAYVAQ&q=momo+guidonia&rlz=1C5CHFA_enIT1035IT1035&oq=momo+&gs_lcrp=EgZjaHJvbWUqFQgBEC4YJxivARjHARiABBiKBRiOBTIGCAAQRRg5MhUIARAuGCcYrwEYxwEYgAQYigUYjgUyDAgCEAAYQxiABBiKBTIMCAMQABhDGIAEGIoFMgcIBBAuGIAEMgcIBRAuGIAEMgcIBhAAGIAEMgcIBxAAGIAEMgcICBAAGI8CMgcICRAAGI8C0gEJMzAxNWowajE1qAIJsAIB8QW7l2k0jCabkA&sourceid=chrome&ie=UTF-8";
 
   const starLabels = ['Terribile 😤', 'Non bene 😕', 'Nella media 😐', 'Ottima 😊', 'Eccellente 🤩'];
@@ -233,7 +248,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: url("da
     }
   }
 
-  async function submitForm() {
+  window.submitForm = async function() {
     const nome = document.getElementById('inputNome').value.trim();
     const phone = document.getElementById('inputPhone').value.trim();
     if (!nome) { shake('inputNome'); return; }
@@ -249,20 +264,17 @@ body::before { content: ''; position: fixed; inset: 0; background-image: url("da
     btn.disabled = true;
     btn.innerHTML = 'Invio in corso <span class="dots"><span></span><span></span><span></span></span>';
 
-    const params = new URLSearchParams({
-      nome: nome,
-      telefono: phone,
-      rating: currentRating,
-      tipo: currentRating >= 4 ? 'positivo' : 'negativo'
-    });
-
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = SHEETS_URL + '?' + params.toString();
-    document.body.appendChild(iframe);
-    setTimeout(() => document.body.removeChild(iframe), 5000);
-
-    await new Promise(r => setTimeout(r, 1000));
+    try {
+      await push(ref(db, 'clienti'), {
+        data: new Date().toISOString(),
+        nome: nome,
+        numero: phone,
+        valutazione: currentRating,
+        esito: currentRating >= 4 ? 'positivo' : 'negativo'
+      });
+    } catch(e) {
+      console.error(e);
+    }
 
     if (currentRating >= 4) {
       document.getElementById('btnGoogle').href = GOOGLE_MAPS_URL;
@@ -271,6 +283,8 @@ body::before { content: ''; position: fixed; inset: 0; background-image: url("da
       goToScreen('screen3b');
     }
   }
+
+  window.goToScreen = goToScreen;
 
   function shake(id) {
     const el = document.getElementById(id);
