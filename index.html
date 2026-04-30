@@ -422,6 +422,14 @@ body::before {
       <button class="btn-main" id="btnRiscatta" onclick="submitForm()">
         RISCATTA REGALO 🎁
       </button>
+
+      <label style="display:flex; align-items:flex-start; gap:10px; margin-top:14px; cursor:pointer;">
+        <input type="checkbox" id="privacyCheck" style="margin-top:3px; accent-color:var(--lime); width:15px; height:15px; flex-shrink:0; cursor:pointer;">
+        <span style="font-size:12px; color:var(--muted); line-height:1.5;">
+          Acconsento al trattamento dei miei dati personali per ricevere comunicazioni promozionali. 
+          <a href="#" style="color:var(--lime); text-decoration:none;">Privacy Policy</a>
+        </span>
+      </label>
     </div>
   </div>
 
@@ -551,6 +559,12 @@ body::before {
     const phone = document.getElementById('inputPhone').value.trim();
     if (!nome) { shake('inputNome'); return; }
     if (!phone) { shake('inputPhone'); return; }
+    if (!document.getElementById('privacyCheck').checked) {
+      const cb = document.getElementById('privacyCheck');
+      cb.style.outline = '2px solid #FF4545';
+      setTimeout(() => cb.style.outline = '', 1500);
+      return;
+    }
 
     const btn = document.getElementById('btnRiscatta');
     btn.disabled = true;
