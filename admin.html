@@ -24,6 +24,8 @@ tr:last-child td { border-bottom: none; }
 .badge.pos { background: rgba(200,244,90,0.15); color: var(--lime); }
 .badge.neg { background: rgba(255,69,69,0.15); color: #FF4545; }
 .wa-btn { display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 500; }
+.del-btn { display: inline-flex; align-items: center; justify-content: center; background: rgba(255,69,69,0.15); color: #FF4545; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-left: 6px; transition: background 0.2s; }
+.del-btn:hover { background: rgba(255,69,69,0.3); }
 .loading { text-align: center; padding: 60px; color: var(--muted); }
 </style>
 </head>
@@ -57,7 +59,7 @@ tr:last-child td { border-bottom: none; }
       <th>Numero</th>
       <th>Voto</th>
       <th>Esito</th>
-      <th>WhatsApp</th>
+      <th>Azioni</th>
     </tr>
   </thead>
   <tbody id="tableBody">
@@ -67,7 +69,7 @@ tr:last-child td { border-bottom: none; }
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDLHhB3eU4OqmkJmqwEKIT0v4twMjvXGfo",
@@ -88,32 +90,43 @@ tr:last-child td { border-bottom: none; }
     
     if (!data) {
       tbody.innerHTML = '<tr><td colspan="6" class="loading">Nessun cliente ancora</td></tr>';
+      document.getElementById('totale').textContent = 0;
+      document.getElementById('positivi').textContent = 0;
+      document.getElementById('negativi').textContent = 0;
       return;
     }
 
-    const clienti = Object.values(data).reverse();
+    const entries = Object.entries(data).reverse();
     let pos = 0, neg = 0;
 
-    tbody.innerHTML = clienti.map(c => {
+    tbody.innerHTML = entries.map(([key, c]) => {
       if (c.esito === 'positivo') pos++; else neg++;
-      const data = new Date(c.data).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+      const dataStr = new Date(c.data).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
       const msg = encodeURIComponent(`Ciao ${c.nome}! 👋 Grazie per essere venuto da noi oggi, ci fa molto piacere! Torna presto, hai una sorpresa che ti aspetta 🎁`);
       const num = c.numero.replace(/\s/g, '');
       return `<tr>
-        <td>${data}</td>
+        <td>${dataStr}</td>
         <td><strong>${c.nome}</strong></td>
         <td>${c.numero}</td>
         <td>⭐ ${c.valutazione}/5</td>
         <td><span class="badge ${c.esito === 'positivo' ? 'pos' : 'neg'}">${c.esito}</span></td>
-        <td><a class="wa-btn" href="https://wa.me/39${num}?text=${msg}" target="_blank">💬 Scrivi</a></td>
+        <td>
+          <a class="wa-btn" href="https://wa.me/39${num}?text=${msg}" target="_blank">💬 Scrivi</a>
+          <button class="del-btn" onclick="eliminaCliente('${key}', '${c.nome}')">🗑️</button>
+        </td>
       </tr>`;
     }).join('');
 
-    document.getElementById('totale').textContent = clienti.length;
+    document.getElementById('totale').textContent = entries.length;
     document.getElementById('positivi').textContent = pos;
     document.getElementById('negativi').textContent = neg;
     document.getElementById('lastUpdate').textContent = 'Aggiornato ora';
   });
+
+  window.eliminaCliente = async function(key, nome) {
+    if (!confirm(`Sei sicuro di voler eliminare ${nome}?`)) return;
+    await remove(ref(db, 'clienti/' + key));
+  }
 </script>
 </body>
-</html>£
+</html>
