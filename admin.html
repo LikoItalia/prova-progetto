@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Liko — Pannello Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root { --black: #0A0A0A; --white: #FAFAF8; --lime: #C8F45A; --gray: #1A1A1A; --gray2: #2A2A2A; --muted: #888; }
@@ -26,7 +27,21 @@ tr:last-child td { border-bottom: none; }
 .wa-btn { display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 500; }
 .del-btn { display: inline-flex; align-items: center; justify-content: center; background: rgba(255,69,69,0.15); color: #FF4545; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-left: 6px; transition: background 0.2s; }
 .del-btn:hover { background: rgba(255,69,69,0.3); }
+.qr-btn { display: inline-flex; align-items: center; justify-content: center; background: rgba(200,244,90,0.15); color: var(--lime); border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-left: 6px; transition: background 0.2s; }
+.qr-btn:hover { background: rgba(200,244,90,0.3); }
+.visite-badge { background: rgba(200,244,90,0.1); color: var(--lime); border: 1px solid rgba(200,244,90,0.2); border-radius: 100px; padding: 3px 10px; font-size: 12px; font-weight: 600; }
 .loading { text-align: center; padding: 60px; color: var(--muted); }
+
+/* Modal QR */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; }
+.modal.active { display: flex; }
+.modal-card { background: var(--gray); border-radius: 20px; padding: 32px; text-align: center; border: 1px solid var(--gray2); max-width: 300px; width: 100%; }
+.modal-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+#qrcode { display: flex; justify-content: center; margin-bottom: 20px; }
+#qrcode canvas { border-radius: 12px; }
+.download-btn { width: 100%; padding: 12px; background: var(--lime); color: var(--black); border: none; border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
+.close-btn { width: 100%; padding: 12px; background: transparent; color: var(--muted); border: 1px solid var(--gray2); border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -59,13 +74,25 @@ tr:last-child td { border-bottom: none; }
       <th>Numero</th>
       <th>Voto</th>
       <th>Esito</th>
+      <th>Visite</th>
       <th>Azioni</th>
     </tr>
   </thead>
   <tbody id="tableBody">
-    <tr><td colspan="6" class="loading">Caricamento...</td></tr>
+    <tr><td colspan="7" class="loading">Caricamento...</td></tr>
   </tbody>
 </table>
+
+<!-- Modal QR -->
+<div class="modal" id="qrModal">
+  <div class="modal-card">
+    <div class="modal-title" id="qrNome"></div>
+    <div class="modal-sub">QR personale del cliente</div>
+    <div id="qrcode"></div>
+    <button class="download-btn" onclick="downloadQR()">⬇️ Scarica QR</button>
+    <button class="close-btn" onclick="closeModal()">Chiudi</button>
+  </div>
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -89,7 +116,7 @@ tr:last-child td { border-bottom: none; }
     const tbody = document.getElementById('tableBody');
     
     if (!data) {
-      tbody.innerHTML = '<tr><td colspan="6" class="loading">Nessun cliente ancora</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="loading">Nessun cliente ancora</td></tr>';
       document.getElementById('totale').textContent = 0;
       document.getElementById('positivi').textContent = 0;
       document.getElementById('negativi').textContent = 0;
@@ -104,14 +131,17 @@ tr:last-child td { border-bottom: none; }
       const dataStr = new Date(c.data).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
       const msg = encodeURIComponent(`Ciao ${c.nome}! 👋 Grazie per essere venuto da noi oggi, ci fa molto piacere! Torna presto, hai una sorpresa che ti aspetta 🎁`);
       const num = c.numero.replace(/\s/g, '');
+      const visite = c.visite || 1;
       return `<tr>
         <td>${dataStr}</td>
         <td><strong>${c.nome}</strong></td>
         <td>${c.numero}</td>
         <td>⭐ ${c.valutazione}/5</td>
         <td><span class="badge ${c.esito === 'positivo' ? 'pos' : 'neg'}">${c.esito}</span></td>
+        <td><span class="visite-badge">🔁 ${visite}</span></td>
         <td>
           <a class="wa-btn" href="https://wa.me/39${num}?text=${msg}" target="_blank">💬 Scrivi</a>
+          <button class="qr-btn" onclick="mostraQR('${key}', '${c.nome}')">📱 QR</button>
           <button class="del-btn" onclick="eliminaCliente('${key}', '${c.nome}')">🗑️</button>
         </td>
       </tr>`;
@@ -126,6 +156,32 @@ tr:last-child td { border-bottom: none; }
   window.eliminaCliente = async function(key, nome) {
     if (!confirm(`Sei sicuro di voler eliminare ${nome}?`)) return;
     await remove(ref(db, 'clienti/' + key));
+  }
+
+  window.mostraQR = function(key, nome) {
+    document.getElementById('qrNome').textContent = nome;
+    document.getElementById('qrcode').innerHTML = '';
+    const url = `https://likoitalia.github.io/prova-progetto/check.html?id=${key}`;
+    new QRCode(document.getElementById('qrcode'), {
+      text: url,
+      width: 200,
+      height: 200,
+      colorDark: '#0A0A0A',
+      colorLight: '#FAFAF8',
+    });
+    document.getElementById('qrModal').classList.add('active');
+  }
+
+  window.closeModal = function() {
+    document.getElementById('qrModal').classList.remove('active');
+  }
+
+  window.downloadQR = function() {
+    const canvas = document.querySelector('#qrcode canvas');
+    const link = document.createElement('a');
+    link.download = `QR-${document.getElementById('qrNome').textContent}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
   }
 </script>
 </body>
