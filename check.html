@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liko — Check In</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --black: #0A0A0A; --white: #FAFAF8; --lime: #C8F45A; --gray: #1A1A1A; --gray2: #2A2A2A; --muted: #888; }
+body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.card { background: var(--gray); border-radius: 24px; padding: 40px 32px; text-align: center; max-width: 340px; width: 100%; border: 1px solid var(--gray2); }
+.logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; letter-spacing: -1px; margin-bottom: 32px; }
+.logo span { color: var(--lime); }
+.emoji { font-size: 64px; margin-bottom: 16px; display: block; animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1); }
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.name { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+.visits { font-size: 15px; color: var(--muted); margin-bottom: 24px; }
+.visits strong { color: var(--lime); font-size: 22px; }
+.msg { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.loading { color: var(--muted); font-size: 15px; }
+.error { color: #FF4545; font-size: 15px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">LI<span>KO</span></div>
+  <div id="content">
+    <p class="loading">Caricamento...</p>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDLHhB3eU4OqmkJmqwEKIT0v4twMjvXGfo",
+    authDomain: "liko-229ca.firebaseapp.com",
+    databaseURL: "https://liko-229ca-default-rtdb.firebaseio.com",
+    projectId: "liko-229ca",
+    storageBucket: "liko-229ca.firebasestorage.app",
+    messagingSenderId: "712700067238",
+    appId: "1:712700067238:web:8c5afbdfaa4df419166367"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  const content = document.getElementById('content');
+
+  if (!id) {
+    content.innerHTML = '<p class="error">QR code non valido.</p>';
+  } else {
+    const clienteRef = ref(db, 'clienti/' + id);
+    const snapshot = await get(clienteRef);
+
+    if (!snapshot.exists()) {
+      content.innerHTML = '<p class="error">Cliente non trovato.</p>';
+    } else {
+      const cliente = snapshot.val();
+      const visite = (cliente.visite || 0) + 1;
+
+      await update(clienteRef, { visite: visite });
+
+      content.innerHTML = `
+        <span class="emoji">🎉</span>
+        <div class="name">Ciao, ${cliente.nome}!</div>
+        <div class="visits">Visita numero <strong>${visite}</strong></div>
+        <div class="msg">Bentornato da noi!<br>Grazie per essere qui ancora una volta 🙏</div>
+      `;
+    }
+  }
+</script>
+</body>
+</html>
