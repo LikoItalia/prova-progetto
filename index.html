@@ -72,7 +72,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: url("da
 <body>
 <div class="wrap">
 
-  <!-- SCREEN 1: RATING -->
   <div class="screen active" id="screen1">
     <div style="text-align:center; margin-bottom:32px;">
       <img src="logo momo.png" alt="Momo Restaurant" style="width:90px; height:90px; object-fit:contain; border-radius:16px; margin-bottom:12px;">
@@ -92,7 +91,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: url("da
     </div>
   </div>
 
-  <!-- SCREEN 2: FORM -->
   <div class="screen" id="screen2">
     <div style="text-align:center; margin-bottom:32px;">
       <div class="logo">MOMO</div>
@@ -127,7 +125,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: url("da
     </div>
   </div>
 
-  <!-- SCREEN 3A: POSITIVO -->
   <div class="screen" id="screen3a">
     <div style="text-align:center; margin-bottom:32px;">
       <div class="logo">MOMO</div>
@@ -152,7 +149,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: url("da
     </div>
   </div>
 
-  <!-- SCREEN 3B: NEGATIVO -->
   <div class="screen" id="screen3b">
     <div style="text-align:center; margin-bottom:32px;">
       <div class="logo">MOMO</div>
@@ -270,7 +266,7 @@ body::before { content: ''; position: fixed; inset: 0; background-image: url("da
     btn.innerHTML = 'Invio in corso <span class="dots"><span></span><span></span><span></span></span>';
 
     try {
-      await push(ref(db, 'clienti'), {
+      await push(ref(db, 'clienti/momo'), {
         data: new Date().toISOString(),
         nome: nome,
         numero: phone,
