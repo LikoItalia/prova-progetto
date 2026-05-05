@@ -49,12 +49,13 @@ body { background: var(--black); color: var(--white); font-family: 'DM Sans', sa
 
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
+  const ristorante = params.get('ristorante') || 'momo';
   const content = document.getElementById('content');
 
   if (!id) {
     content.innerHTML = '<p class="error">QR code non valido.</p>';
   } else {
-    const clienteRef = ref(db, 'clienti/' + id);
+    const clienteRef = ref(db, 'clienti/' + ristorante + '/' + id);
     const snapshot = await get(clienteRef);
 
     if (!snapshot.exists()) {
