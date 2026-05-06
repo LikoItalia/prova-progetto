@@ -11,7 +11,6 @@
 :root { --black: #0A0A0A; --white: #FAFAF8; --lime: #C8F45A; --gray: #1A1A1A; --gray2: #2A2A2A; --muted: #888; }
 body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
 
-/* LOGIN */
 .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
 .login-card { background: var(--gray); border-radius: 24px; padding: 40px 32px; max-width: 360px; width: 100%; border: 1px solid var(--gray2); text-align: center; }
 .login-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 32px; letter-spacing: -1px; margin-bottom: 4px; }
@@ -22,9 +21,8 @@ body { background: var(--black); color: var(--white); font-family: 'DM Sans', sa
 .login-btn { width: 100%; padding: 15px; background: var(--lime); color: var(--black); border: none; border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; }
 .login-error { color: #FF4545; font-size: 13px; margin-top: 10px; display: none; }
 
-/* ADMIN */
 .admin-wrap { display: none; padding: 32px 16px; }
-.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 10px; }
 .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; letter-spacing: -1px; }
 .logo span { color: var(--lime); }
 .logout-btn { background: var(--gray2); color: var(--muted); border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
@@ -36,16 +34,19 @@ table { width: 100%; border-collapse: collapse; background: var(--gray); border-
 th { background: var(--gray2); padding: 14px 16px; text-align: left; font-size: 11px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
 td { padding: 14px 16px; border-bottom: 1px solid var(--gray2); font-size: 14px; }
 tr:last-child td { border-bottom: none; }
+tr.sparito td { background: rgba(255,69,69,0.05); }
+tr.compleanno-oggi td { background: rgba(200,244,90,0.05); }
 .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 500; }
 .badge.pos { background: rgba(200,244,90,0.15); color: var(--lime); }
 .badge.neg { background: rgba(255,69,69,0.15); color: #FF4545; }
+.badge.sparito { background: rgba(255,69,69,0.15); color: #FF4545; }
+.badge.compleanno { background: rgba(200,244,90,0.15); color: var(--lime); }
 .wa-btn { display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 500; }
 .del-btn { display: inline-flex; align-items: center; justify-content: center; background: rgba(255,69,69,0.15); color: #FF4545; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-left: 6px; }
 .qr-btn { display: inline-flex; align-items: center; justify-content: center; background: rgba(200,244,90,0.15); color: var(--lime); border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-left: 6px; }
 .visite-badge { background: rgba(200,244,90,0.1); color: var(--lime); border: 1px solid rgba(200,244,90,0.2); border-radius: 100px; padding: 3px 10px; font-size: 12px; font-weight: 600; }
 .loading { text-align: center; padding: 60px; color: var(--muted); }
 
-/* MODAL */
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; }
 .modal.active { display: flex; }
 .modal-card { background: var(--gray); border-radius: 20px; padding: 32px; text-align: center; border: 1px solid var(--gray2); max-width: 300px; width: 100%; }
@@ -59,7 +60,6 @@ tr:last-child td { border-bottom: none; }
 </head>
 <body>
 
-<!-- LOGIN -->
 <div class="login-wrap" id="loginWrap">
   <div class="login-card">
     <div class="login-logo">LI<span>KO</span></div>
@@ -70,7 +70,6 @@ tr:last-child td { border-bottom: none; }
   </div>
 </div>
 
-<!-- ADMIN -->
 <div class="admin-wrap" id="adminWrap">
   <div class="header">
     <div class="logo">LI<span>KO</span> <span style="font-size:16px; color:var(--muted); font-weight:400;">— Momo Restaurant</span></div>
@@ -92,16 +91,16 @@ tr:last-child td { border-bottom: none; }
         <th>Voto</th>
         <th>Esito</th>
         <th>Visite</th>
+        <th>Compleanno</th>
         <th>Azioni</th>
       </tr>
     </thead>
     <tbody id="tableBody">
-      <tr><td colspan="7" class="loading">Caricamento...</td></tr>
+      <tr><td colspan="8" class="loading">Caricamento...</td></tr>
     </tbody>
   </table>
 </div>
 
-<!-- MODAL QR -->
 <div class="modal" id="qrModal">
   <div class="modal-card">
     <div class="modal-title" id="qrNome"></div>
@@ -155,29 +154,58 @@ tr:last-child td { border-bottom: none; }
       const tbody = document.getElementById('tableBody');
 
       if (!data) {
-        tbody.innerHTML = '<tr><td colspan="7" class="loading">Nessun cliente ancora</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="loading">Nessun cliente ancora</td></tr>';
         document.getElementById('totale').textContent = 0;
         document.getElementById('positivi').textContent = 0;
         document.getElementById('negativi').textContent = 0;
         return;
       }
 
+      const oggi = new Date();
       const entries = Object.entries(data).reverse();
       let pos = 0, neg = 0;
 
       tbody.innerHTML = entries.map(([key, c]) => {
         if (c.esito === 'positivo') pos++; else neg++;
+
         const dataStr = new Date(c.data).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
         const msg = encodeURIComponent(`Ciao ${c.nome}! 👋 Grazie per essere venuto da noi oggi, ci fa molto piacere! Torna presto, hai una sorpresa che ti aspetta 🎁`);
         const num = c.numero.replace(/\s/g, '');
         const visite = c.visite || 1;
-        return `<tr>
-          <td>${dataStr}</td>
+
+        // Controllo sparito (30+ giorni)
+        const giorniDa = Math.floor((oggi - new Date(c.data)) / (1000 * 60 * 60 * 24));
+        const sparito = giorniDa >= 30;
+
+        // Controllo compleanno
+        let compleannoBadge = '';
+        let rowClass = '';
+        if (sparito) rowClass = 'sparito';
+
+        if (c.compleanno) {
+          const bday = new Date(c.compleanno);
+          const isOggi = bday.getDate() === oggi.getDate() && bday.getMonth() === oggi.getMonth();
+          const diff = Math.ceil((new Date(oggi.getFullYear(), bday.getMonth(), bday.getDate()) - oggi) / (1000 * 60 * 60 * 24));
+          if (isOggi) {
+            compleannoBadge = '<span class="badge compleanno">🎂 Oggi!</span>';
+            rowClass = 'compleanno-oggi';
+          } else if (diff >= 0 && diff <= 7) {
+            compleannoBadge = `<span class="badge compleanno">🎂 Tra ${diff}g</span>`;
+          } else {
+            compleannoBadge = `<span style="color:var(--muted); font-size:12px;">${bday.toLocaleDateString('it-IT', {day:'2-digit', month:'2-digit'})}</span>`;
+          }
+        } else {
+          compleannoBadge = '<span style="color:var(--muted); font-size:12px;">—</span>';
+        }
+
+        return `<tr class="${rowClass}">
+          <td>${dataStr} ${sparito ? '<span class="badge sparito">👻 Sparito</span>' : ''}</td>
           <td><strong>${c.nome}</strong></td>
           <td>${c.numero}</td>
           <td>⭐ ${c.valutazione}/5</td>
           <td><span class="badge ${c.esito === 'positivo' ? 'pos' : 'neg'}">${c.esito}</span></td>
           <td><span class="visite-badge">🔁 ${visite}</span></td>
+          <td>${compleannoBadge}</td>
           <td>
             <a class="wa-btn" href="https://wa.me/39${num}?text=${msg}" target="_blank">💬 Scrivi</a>
             <button class="qr-btn" onclick="mostraQR('${key}', '${c.nome}')">📱 QR</button>
