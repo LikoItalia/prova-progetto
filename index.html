@@ -272,12 +272,8 @@ body::before { content: ''; position: fixed; inset: 0; background-image: url("da
     btn.innerHTML = 'Invio in corso <span class="dots"><span></span><span></span><span></span></span>';
 
     try {
-      // Controlla se il numero esiste già
-      const numeroPulito = phone.replace(/\s/g, '');
       const snapshot = await get(query(ref(db, 'clienti/momo'), orderByChild('numero'), equalTo(phone)));
-
       if (snapshot.exists()) {
-        // Numero già presente — aggiorna ultima visita
         const key = Object.keys(snapshot.val())[0];
         await update(ref(db, 'clienti/momo/' + key), {
           data: new Date().toISOString(),
@@ -285,7 +281,6 @@ body::before { content: ''; position: fixed; inset: 0; background-image: url("da
           esito: currentRating >= 4 ? 'positivo' : 'negativo'
         });
       } else {
-        // Nuovo cliente
         await push(ref(db, 'clienti/momo'), {
           data: new Date().toISOString(),
           nome: nome,
